@@ -1,0 +1,40 @@
+-------------------DAY 1---------------
+Q1. Find 2nd Highest Salary
+
+select * from(
+
+select * , dense_rank() over
+(order by salary desc) as rank
+
+from Employees
+
+) as t
+
+where rank =2;
+
+Q2- Find Employees Joined in Last 30 Days
+
+select * from Employees
+where JoinDate >= DATEADD(DAY,-30,GETDATE())
+
+Q3. Count Employees Department-wise
+
+select DeptId , count(EmpId) as TotalEmployee 
+from Employees
+group by DeptId;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
