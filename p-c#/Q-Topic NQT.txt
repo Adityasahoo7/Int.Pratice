@@ -1,0 +1,68 @@
+🔥 Types of Coding Questions Asked in TCS Digital
+🔹 1️⃣ Array-Based Problems (Very Common)
+
+Examples:
+
+Find second largest element
+
+Move all zeros to end
+
+Remove duplicates
+
+Find missing number
+
+Maximum subarray sum
+
+Rotate array
+
+Two sum problem
+
+🔹 2️⃣ String-Based Problems
+
+Examples:
+
+Check palindrome
+
+Count vowels/consonants
+
+Anagram check
+
+Reverse words in sentence
+
+Longest substring without repeating characters
+
+Remove duplicate characters
+
+🔹 3️⃣ Pattern / Logic Based
+
+Examples:
+
+Print pattern
+
+Convert number to binary
+
+Fibonacci series
+
+Prime number check
+
+Armstrong number
+
+GCD / LCM
+
+🔹 4️⃣ Searching & Sorting Logic
+
+Binary search
+
+Merge two sorted arrays
+
+Custom sorting logic
+
+Count frequency using hashing
+
+🔹 5️⃣ Basic Recursion
+
+Factorial
+
+Fibonacci
+
+Reverse string using recursion
