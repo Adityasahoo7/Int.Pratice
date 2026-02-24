@@ -1,0 +1,34 @@
+// Online C# Editor for free
+// Write, Edit and Run your C# code using C# Online Compiler
+
+using System;
+
+public class HelloWorld
+{
+    
+    public static void Reverse(int[] arr,int left,int right){
+        while(left<right){
+            int temp = arr[left];
+            arr[left]=arr[right];
+            arr[right]=temp;
+            left++;
+            right--;
+        }
+    }
+    public static void rotate(int[] arr,int k){
+       int n = arr.Length;
+        k =k%n;
+        
+        Reverse(arr,0,n-1);
+        
+        Reverse(arr,0,k-1);
+        Reverse(arr,k,n-1);
+    }
+    public static void Main(string[] args)
+    {
+        int[] arr = {1,2,3,4,5,6,7};
+        int k =3;
+        rotate(arr,k);
+        Console.WriteLine ("OutPut: ["+string.Join(", ",arr)+" ]");
+    }
+}

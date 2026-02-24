@@ -1,0 +1,38 @@
+// Online C# Editor for free
+// Write, Edit and Run your C# code using C# Online Compiler
+
+using System;
+using System.Collections.Generic;
+public class HelloWorld
+{
+    public static char findfirstnonrepeatingchar(string str){
+        
+        Dictionary<char,int> freq = new Dictionary<char,int>();
+        foreach(char c in str){
+            if(freq.ContainsKey(c)){
+                freq[c]++;
+                
+            }
+            else{
+                freq[c]=1;
+            }
+            
+        }
+        
+        foreach(char c in str){
+            
+            if(freq[c]==1){
+                return c;
+            }
+        }
+        return '\0';
+    }
+    
+    public static void Main(string[] args)
+    {
+        
+        string str ="abbcdedefggac";
+        char ch = findfirstnonrepeatingchar(str);
+        Console.WriteLine (ch);
+    }
+}

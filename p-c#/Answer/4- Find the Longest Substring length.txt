@@ -1,0 +1,31 @@
+using System;
+using System.Collections.Generic;
+namespace HelloWorld
+{
+  class Program
+  {
+  public static int longestsubstringwithoutrepeat(string str){
+  HashSet<char> seen = new HashSet<char>();	
+  int left =0;
+  int maxlength=0;
+  
+  for(int right =0;right<str.Length;right++){
+  
+  while(seen.Contains(str[right])){
+  
+  seen.Remove(str[left]);
+  left++;
+  }
+  seen.Add(str[right]);
+  maxlength = Math.Max(maxlength,right-left+1);
+  }
+  return maxlength;
+  }
+    static void Main(string[] args)
+    {
+    string str = "abcbacbb";
+    int result = longestsubstringwithoutrepeat(str);
+      Console.WriteLine(result);    
+    }
+  }
+}
