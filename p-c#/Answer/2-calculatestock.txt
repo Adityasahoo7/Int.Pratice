@@ -1,0 +1,44 @@
+using System;
+
+namespace HelloWorld
+{
+  class Program
+  {
+  public static int stockcalculate(int[] arr){
+  int buyprice = arr[0];
+  int maxprice =0;
+  
+  
+  for(int i=0;i<arr.Length;i++){
+  
+  if(arr[i]<buyprice){
+  
+  buyprice=arr[i];
+  
+  }
+  
+  else{
+  int profit = arr[i]-buyprice;
+  
+  if(profit>maxprice){
+  maxprice=profit;
+  }
+  
+  }
+  
+  
+  }
+  
+  
+  return maxprice;
+  
+  
+  }
+    static void Main(string[] args)
+    {
+    int[] arr={7,1,5,3,6,4};
+    int result = stockcalculate(arr);
+      Console.WriteLine(result);    
+    }
+  }
+}
