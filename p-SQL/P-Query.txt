@@ -23,6 +23,29 @@ select DeptId , count(EmpId) as TotalEmployee
 from Employees
 group by DeptId;
 
+-----------------------DAY2-------------------
+Q1. Find 3rd Highest Salary
+
+select * from(
+select * , dense_rank() over
+(order by Salary desc) as rank
+from Employees
+) as temptable
+where rank=3
+
+Q2. Find Department with Maximum Employees
+
+select top 1 DeptId, count(EmpId) asTotlEmployee
+from Employees
+group by DeptId
+order by count(EmpId) desc;
+
+Q3. Fetch Employees Who Joined in Last 6 Months
+
+select * from Employees
+where JoinDate >= Dateadd(DAY,-9,GETDATE());
+
+
 
 
 
