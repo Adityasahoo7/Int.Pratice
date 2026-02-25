@@ -45,6 +45,16 @@ Q3. Fetch Employees Who Joined in Last 6 Months
 select * from Employees
 where JoinDate >= Dateadd(DAY,-9,GETDATE());
 
+-----------------------------DAY 3-------------------------------------
+🟢 Q1.
+
+Write query to fetch top 3 highest salaries.
+
+Select Top 3 * from Employees
+Order by Salary desc
+
+
+
 
 
 
