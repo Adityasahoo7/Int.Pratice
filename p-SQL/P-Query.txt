@@ -66,6 +66,18 @@ from Employees
 group by Name
 having count(*)>1;
 
+🟢 Q4.Write query to update salary by 10% for employees in DeptId = 2.
+
+Update Employees
+set Salary = Salary+ Salary*10/100
+where DeptId=2
+
+🟢 Q5.Write query to fetch employees who joined between '2024-01-01' and '2024-12-31'.
+
+SELECT *
+FROM Employees
+WHERE JoinDate >= '2020-01-01'
+  AND JoinDate < '2022-01-01';
 
 
 
