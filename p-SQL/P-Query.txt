@@ -59,8 +59,12 @@ where Salary >
 (select avg(e2.Salary) from Employees e2
 where e.DeptId=e2.DeptId);
 
+🟢 Q3.Write query to find duplicate employee names.
 
-
+select Name , count(*) as DuplicateEmp 
+from Employees
+group by Name
+having count(*)>1;
 
 
 
