@@ -46,13 +46,18 @@ select * from Employees
 where JoinDate >= Dateadd(DAY,-9,GETDATE());
 
 -----------------------------DAY 3-------------------------------------
-🟢 Q1.
-
-Write query to fetch top 3 highest salaries.
+🟢 Q1.Write query to fetch top 3 highest salaries.
 
 Select Top 3 * from Employees
 Order by Salary desc
 
+Q2. Write query to find employees earning more than their department average.
+
+select *
+from Employees e
+where Salary >
+(select avg(e2.Salary) from Employees e2
+where e.DeptId=e2.DeptId);
 
 
 
