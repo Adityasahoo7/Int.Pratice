@@ -91,6 +91,74 @@ from Employees
 ) as temp
 where rank =2;
 
+🟢 Q2.Write query to fetch departments having more than 5 employees.
+
+Select DeptId , COUNT(EmpId) as TotalEmployee
+From Employees
+group by DeptId
+having COUNT(EmpId) >=5
+
+🟢 Q3.Write query to fetch employees whose salary is between 30000 and 60000.
+
+Select * from Employees
+where Salary between 30000 and 60000;
+
+🟢 Q4.Write query to find employees who share the same salary.
+
+Select * from Employees
+Where Salary in (
+Select Salary from Employees
+group by Salary
+Having count(*)>1
+)order by Salary asc
+
+🟢 Q5.Write query to fetch employees who joined in the current year.
+
+Select * from Employees
+Where YEAR(JoinDate) = YEAR(GETDATE());
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
