@@ -81,7 +81,15 @@ WHERE JoinDate >= '2020-01-01'
 
 
 
+----------------------------------------DAY 4---------------------------------------------
+🟢 Q1.Write query to fetch employee(s) having the 2nd lowest salary.
 
+select * from(
+Select * , Dense_rank() over
+(Order by Salary asc) as rank
+from Employees
+) as temp
+where rank =2;
 
 
 
