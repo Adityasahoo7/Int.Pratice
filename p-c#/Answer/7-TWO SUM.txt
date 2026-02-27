@@ -1,0 +1,39 @@
+using System;
+using System.Collections.Generic;
+
+namespace HelloWorld
+{
+    class Program
+    {
+        public static int[] TwoSum(int[] arr, int k)
+        {
+            Dictionary<int, int> seen = new Dictionary<int, int>();
+
+            for (int i = 0; i < arr.Length; i++)
+            {
+                int num = k - arr[i];
+
+                if (seen.ContainsKey(num))
+                {
+                    return new int[] { seen[num], i };
+                }
+                else
+                {
+                    seen[arr[i]] = i;   // fixed
+                }
+            }
+
+            return new int[] { -1, -1 };
+        }
+
+        static void Main(string[] args)
+        {
+            int[] arr = { 2, 3, 4, 7, 8, 9 };
+            int num = 9;
+
+            int[] result = TwoSum(arr, num);
+
+            Console.WriteLine("Output : [" + string.Join(", ", result) + "]");
+        }
+    }
+}

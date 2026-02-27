@@ -1,0 +1,42 @@
+using System;
+using System.Collections.Generic;
+namespace HelloWorld
+{
+  class Program
+  {
+  public static bool validParentheses(string str){
+  
+  Stack<char> stack = new Stack<char>();
+  
+  foreach(char c in str){
+  if(c=='('||c=='{'||c=='['){
+  stack.Push(c);
+  }
+  else{
+  if(stack.Count==0){
+  return false;
+  }
+  else{
+  char top = stack.Pop();
+  
+  if((c==')' && top!='(')||
+  	(c=='}'&& top!='{')||
+    (c==']'&& top!='[')
+  )
+  return false;
+  }
+  }
+  
+  }
+  
+  return stack.Count==0;
+  
+  }
+    static void Main(string[] args)
+    {
+    string str ="(){[]";
+    
+      Console.WriteLine(validParentheses(str));    
+    }
+  }
+}
