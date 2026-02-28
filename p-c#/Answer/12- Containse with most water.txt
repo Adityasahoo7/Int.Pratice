@@ -1,0 +1,42 @@
+using System;
+
+namespace HelloWorld
+{
+  class Program
+  {
+  
+public static int containerwithmostwater(int[] arr){
+
+int left=0;
+int right = arr.Length -1;
+int maxarea = 0;
+
+while(left<right){
+
+int width = right -left;
+
+int minheight = Math.Min(arr[left],arr[right]);
+int area = width * minheight;
+
+maxarea = Math.Max(maxarea,area);
+if(arr[right]>arr[left]){
+left++;
+}
+else{
+right--;
+}
+}
+return maxarea;
+
+
+}
+ 
+    static void Main(string[] args)
+    {
+    
+  int[] height = {1,8,6,2,5,4,8,3,7};
+        int result = containerwithmostwater(height);
+      Console.WriteLine(result);    
+    }
+  }
+}
