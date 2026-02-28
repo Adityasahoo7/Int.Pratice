@@ -1,0 +1,28 @@
+using System;
+
+namespace HelloWorld
+{
+  class Program
+  {
+  
+ public static string reverse(string str){
+ 
+ str.Trim();
+ string[] word = str.Split(' ',StringSplitOptions.RemoveEmptyEntries);
+ 
+ Array.Reverse(word);
+ 
+ return string.Join(" ",word);
+ 
+ 
+ }
+ 
+    static void Main(string[] args)
+    {
+    
+ string input = "the sky is blue";
+        string result = reverse(input);
+      Console.WriteLine(result);    
+    }
+  }
+}
