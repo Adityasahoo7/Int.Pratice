@@ -117,16 +117,45 @@ Having count(*)>1
 Select * from Employees
 Where YEAR(JoinDate) = YEAR(GETDATE());
 
+--------------------------------DAY 5 -------------------------------------------
+
+🟢 Q1.Write query to fetch the employee(s) having highest salary overall.
+
+Select * from(
+Select * ,DENSE_RANK() over
+(order by Salary desc) as rank
+from Employees
+) as temptable
+where rank =1
+
+🟢 Q2.Write query to find the total salary expense department-wise.
+
+Select DeptId , Sum(Salary) as Totalsalary
+from Employees
+group by DeptId
+
+🟢 Q3. Write query to fetch employees whose salary is greater than 2nd highest salary.
+
+Select * from Employees
+Where Salary >(
+Select Salary from(
+Select Salary ,DENSE_RANK() over
+(order by Salary desc) as rank
+from Employees
+) as temptable
+where rank =2
+)
+
+🟢 Q4.Write query to fetch employees who do not belong to DeptId = 3.
+
+Select * from Employees
+Where DeptId !=3;
+
+🟢 Q5.Write query to find employees hired in the month of January (any year).
 
 
-
-
-
-
-
-
-
-
+Select * from Employees
+Where MONTH(JoinDate) =1;
 
 
 
