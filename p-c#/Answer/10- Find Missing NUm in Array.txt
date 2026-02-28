@@ -1,0 +1,31 @@
+using System;
+
+namespace HelloWorld
+{
+  class Program
+  {
+  
+  public static int findmissnumber(int[] arr){
+   
+   int n = arr.Length;
+   int totalnumber= n*(n+1)/2;
+   
+   int actualnum=0;
+   
+   foreach(int num in arr){
+   
+   actualnum += num;
+   }
+   
+  return totalnumber -actualnum;
+  
+  }
+    static void Main(string[] args)
+    {
+    
+    int[] arr ={1,0,3};
+    int result = findmissnumber(arr);
+      Console.WriteLine(result);    
+    }
+  }
+}
