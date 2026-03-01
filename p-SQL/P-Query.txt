@@ -146,10 +146,10 @@ from Employees
 where rank =2
 )
 
-🟢 Q4.Write query to fetch employees who do not belong to DeptId = 3.
+🟢 Q4.Write query to fetch employees who do not belong to DeptId = 2.
 
 Select * from Employees
-Where DeptId !=3;
+Where DeptId !=2;
 
 🟢 Q5.Write query to find employees hired in the month of January (any year).
 
