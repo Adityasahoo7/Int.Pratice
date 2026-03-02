@@ -165,9 +165,19 @@ select * from Employees e1
 where e1.Salary in (Select  min(e2.Salary) from Employees e2
 where e1.DeptId=e2.DeptId)
 
+🟢 Q2.Write query to fetch top 2 highest salaries department-wise.
 
+select * from(
+Select * , DENSE_RANK() over
+(Partition by DeptId order by Salary Desc) as rnk
+from Employees
+) as temptable
+where rnk<=2
 
+🟢 Q3.Write query to find employees who joined before the year 2023.
 
+select * from Employees
+where Year(JoinDate) <2023
 
 
 
