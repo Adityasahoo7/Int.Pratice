@@ -179,7 +179,18 @@ where rnk<=2
 select * from Employees
 where Year(JoinDate) <2023
 
+🟢 Q4.Write query to count employees whose salary is greater than 50000.
 
+Select count(*) as totalcount from Employees
+Where Salary > 50000
+
+🟢 Q5.Write query to fetch employee(s) who have the same JoinDate.
+
+Select * from Employees
+where JoinDate in(
+Select JoinDate From Employees
+group by JoinDate
+Having Count(*)>1)
 
 
 
