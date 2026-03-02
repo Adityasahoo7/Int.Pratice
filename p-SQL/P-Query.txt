@@ -157,6 +157,15 @@ Where DeptId !=3;
 Select * from Employees
 Where MONTH(JoinDate) =1;
 
+------------------------------------------------DAY 6---------------------------------------------
+
+🟢 Q1.Write query to fetch employees whose salary is equal to the minimum salary in their department.
+
+select * from Employees e1
+where e1.Salary in (Select  min(e2.Salary) from Employees e2
+where e1.DeptId=e2.DeptId)
+
+
 
 
 
