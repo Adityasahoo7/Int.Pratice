@@ -1,0 +1,42 @@
+using System;
+using System.Collections.Generic;
+namespace HelloWorld
+{
+  class Program
+  {
+  
+  public static int[] intersection(int[] arr1,int[] arr2){
+  
+  HashSet<int> h1 = new HashSet<int>(arr1);
+  HashSet<int> h2 = new HashSet<int>();
+  
+  foreach(int num in arr2){
+  
+  if(h1.Contains(num)){
+  h2.Add(num);
+  }
+  
+  }
+  
+  return new List<int>(h2).ToArray();
+  
+  
+  }
+  
+  
+  
+    static void Main(string[] args)
+    {
+    
+     int[] nums1 = {1,2,2,3,1};
+        int[] nums2 = {2,3,5,7};
+        
+        int[] result = intersection(nums1,nums2);
+        
+        
+    
+    
+      Console.WriteLine("Output : [ "+string.Join(", ",result) + " ]");    
+    }
+  }
+}
