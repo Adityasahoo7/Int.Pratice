@@ -219,7 +219,13 @@ where Salary > (
 Select AVG(Salary) from Employees
 )
 
+🟢 Q4 Write query to fetch employees who joined in the last 1 year.
 
+Select * from Employees
+where YEAR(JoinDate) >YEAR(GETDATE())  -1
+
+
+🟢 Q5 Write query to fetch employee(s) having the same salary.
 
 
 
