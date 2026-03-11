@@ -193,6 +193,19 @@ group by JoinDate
 Having Count(*)>1)
 
 
+------------------------------------------------DAY 7---------------------------------------------
+
+🟢 Q1Write query to fetch the 3rd highest salary.
+
+select * from(
+select * , DENSE_RANK() over 
+(order by Salary desc) as rrk
+from Employees
+)as temptable
+where rrk=3
+
+🟢 Q2 Write query to count employees department-wise.
+
 
 
 
