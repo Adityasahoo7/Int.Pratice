@@ -207,6 +207,19 @@ where rrk=3
 🟢 Q2 Write query to count employees department-wise.
 
 
+select DeptId , count(*) as TotalEmp
+from Employees
+group by DeptId
+
+🟢 Q3 Write query to fetch employees whose salary is greater than overall average salary.
+
+
+Select * from Employees
+where Salary > (
+Select AVG(Salary) from Employees
+)
+
+
 
 
 
