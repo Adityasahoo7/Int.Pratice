@@ -227,7 +227,7 @@ where YEAR(JoinDate) >YEAR(GETDATE())  -1
 
 🟢 Q5 Write query to fetch employee(s) having the same salary.
 
-//na//
+
 
 
 
