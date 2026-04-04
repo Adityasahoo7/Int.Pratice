@@ -24,3 +24,24 @@ end;
 exec spgetempbyid
 @empid =3;
 
+
+--3 - Insert a new employee record
+Create Procedure spinsertemp
+@empid int,
+@name varchar(50),
+@salary decimal,
+@deptid int,
+@joindate date
+as
+begin
+set nocount on
+insert into Employees values(@empid,@name,@salary,@deptid,@joindate);
+end
+
+exec spinsertemp
+@empid=56,
+@name = 'Aditya',
+@salary = 98569,
+@deptid =1,
+@joindate= '2016-09-09';
+
