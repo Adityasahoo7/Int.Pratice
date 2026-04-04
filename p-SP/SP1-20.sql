@@ -45,3 +45,19 @@ exec spinsertemp
 @deptid =1,
 @joindate= '2016-09-09';
 
+-- 4 - Update employee salary by EmpId
+
+create procedure spupdatesalarybyid
+@salary decimal,
+@empid int
+as
+begin
+set nocount on
+update Employees
+Set Salary = @salary
+Where EmpId = @empid
+end;
+
+exec spupdatesalarybyid
+@empid=1,
+@salary = 55000;
