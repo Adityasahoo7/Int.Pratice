@@ -61,3 +61,13 @@ end;
 exec spupdatesalarybyid
 @empid=1,
 @salary = 55000;
+
+--5 - Delete an employee by EmpId.
+create procedure spdeleteemp
+@empid int
+as
+begin
+set nocount on
+delete from Employees
+where EmpId = @empid;
+end
