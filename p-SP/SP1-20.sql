@@ -71,3 +71,6 @@ set nocount on
 delete from Employees
 where EmpId = @empid;
 end
+
+exec spdeleteemp
+@empid =56;
