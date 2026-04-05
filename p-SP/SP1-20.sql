@@ -74,3 +74,17 @@ end
 
 exec spdeleteemp
 @empid =56;
+
+--6 - Get all employees of a specific DeptId
+create procedure spgetallempbydeptid
+@deptid int
+as 
+begin
+set nocount on
+select * from Employees
+where DeptId = @deptid;
+end
+
+exec spgetallempbydeptid
+@deptid = 1
+
