@@ -88,3 +88,16 @@ end
 exec spgetallempbydeptid
 @deptid = 1
 
+
+--7- Get employees who joined after a given date
+
+create procedure spgetempbydate
+@joindate Date
+as
+begin
+Select * from Employees
+where JoinDate >@joindate;
+end
+
+exec spgetempbydate
+
