@@ -100,4 +100,4 @@ where JoinDate >@joindate;
 end
 
 exec spgetempbydate
-
+@joindate ='2020-10-10'
