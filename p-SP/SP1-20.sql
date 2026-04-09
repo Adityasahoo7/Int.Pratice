@@ -124,3 +124,19 @@ from Employees
 end
 
 exec spcountemp
+
+--10 - Get maximum salary in the table also nth.
+create Procedure spgethigstsalary
+@rank int
+as
+begin
+select * from(
+Select * , DENSE_RANK() over
+(order by Salary desc) as rrk
+from Employees
+)as temptable
+where rrk = @rank
+end
+
+exec spgethigstsalary
+@rank =2
