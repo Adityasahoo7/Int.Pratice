@@ -101,3 +101,16 @@ end
 
 exec spgetempbydate
 @joindate ='2020-10-10'
+
+--8 - Get employees with salary greater than a given value.
+
+create Procedure spgetempgreaterthansalary
+@salary int
+as
+begin
+select * from Employees
+where Salary >@salary 
+end
+
+exec spgetempgreaterthansalary
+@salary = 75000
