@@ -114,3 +114,13 @@ end
 
 exec spgetempgreaterthansalary
 @salary = 75000
+
+--9 - Count total number of employees.
+create procedure spcountemp
+as
+begin
+Select count(EmpId) as TotalEmp
+from Employees
+end
+
+exec spcountemp
