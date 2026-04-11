@@ -149,3 +149,12 @@ Where Salary = (Select MIN(Salary) from Employees)
 end
 
 exec spgetminsalary
+
+--12 - Get average salary of employees.
+create procedure spgetavgsalary
+as
+begin
+Select avg(Salary) from Employees
+end
+
+exec spgetavgsalary
