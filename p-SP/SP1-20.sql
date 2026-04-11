@@ -158,3 +158,13 @@ Select avg(Salary) from Employees
 end
 
 exec spgetavgsalary
+
+--13 -Get employees sorted by salary descending
+create procedure spsortsalarydesc
+as
+begin
+Select * from Employees
+order by Salary desc
+end
+
+exec spsortsalarydesc
