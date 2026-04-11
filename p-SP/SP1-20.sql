@@ -168,3 +168,19 @@ order by Salary desc
 end
 
 exec spsortsalarydesc
+--14 - Get top 5 highest paid employees
+create procedure spgettop5empbysalarydesc
+as
+begin
+select top 5 * from Employees
+order by Salary desc
+end
+
+exec spgettop5empbysalarydesc
+
+
+
+
+
+
+
