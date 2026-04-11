@@ -179,6 +179,38 @@ end
 exec spgettop5empbysalarydesc
 
 
+--15-Get employees whose name starts with a specific letter
+create procedure spgetempbyspecificnamestart
+@name varchar
+as
+begin
+select * from Employees
+where Name like @name + '%'
+end
+
+exec spgetempbyspecificnamestart
+@name = 'ad'
+
+--16 -Get total employees in each department
+create procedure spgetcoutbydept
+as
+begin
+select DeptId , count(EmpId) As TotalEmp
+from Employees
+group by DeptId
+end
+
+exec spgetcoutbydept
+--17 - Get total salary expense per department
+create procedure spgettotalsalarybydept
+as
+begin
+select DeptId , Sum(Salary) as TotalSalary
+from Employees
+group by DeptId
+end
+
+exec spgettotalsalarybydept
 
 
 
