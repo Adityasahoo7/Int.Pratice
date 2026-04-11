@@ -140,3 +140,12 @@ end
 
 exec spgethigstsalary
 @rank =2
+--11-Get minimum salary in the table.
+create procedure spgetminsalary
+as
+begin
+select * from Employees
+Where Salary = (Select MIN(Salary) from Employees)
+end
+
+exec spgetminsalary
