@@ -212,6 +212,22 @@ end
 
 exec spgettotalsalarybydept
 
+--18 - Get employees whose salary is between two values.
+
+create procedure spgetsalarybetween
+@num1 int,
+@num2 int
+as
+begin
+select * from  Employees
+where Salary between @num1 and @num2
+end
+
+exec spgetsalarybetween
+@num1 = 45000,
+@num2 = 55000
+
+
 
 
 
