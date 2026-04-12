@@ -239,8 +239,23 @@ end
 exec spgetempjoinspecificyear
 @date=2021
 
+--20 -Update department of an employee
+
+create procedure spupdateempbydept
+@empid int,
+@deptid int
+as
+begin
+set nocount on
+update Employees
+set DeptId = @deptid
+where EmpId=@empid
+end
 
 
+exec spupdateempbydept
+@empid =1,
+@deptid =3
 
 
 
