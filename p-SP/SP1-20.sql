@@ -227,6 +227,19 @@ exec spgetsalarybetween
 @num1 = 45000,
 @num2 = 55000
 
+--19 - Get employees who joined in a specific year
+create procedure spgetempjoinspecificyear
+@date int
+as
+begin
+Select * from Employees
+where YEAR(JoinDate)= @date
+end
+
+exec spgetempjoinspecificyear
+@date=2021
+
+
 
 
 
