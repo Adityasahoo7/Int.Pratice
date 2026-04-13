@@ -12,3 +12,6 @@ set Salary= Salary + (Salary * @percent/100)
 Where DeptId =@deptid
 end
 
+exec spincrementsalarybydept
+@percent =10,
+@deptid =3
