@@ -15,3 +15,17 @@ end
 exec spincrementsalarybydept
 @percent =10,
 @deptid =3
+
+--22-Get second highest salary
+
+create procedure spget2ndhighestsalary
+@rrk int
+as
+begin
+Select * from(
+Select * ,DENSE_RANK() over
+(order by Salary desc) as rrk
+from Employees
+) as trmptable
+Where rrk =@rrk
+end
