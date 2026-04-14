@@ -29,3 +29,6 @@ from Employees
 ) as trmptable
 Where rrk =@rrk
 end
+
+exec spget2ndhighestsalary
+@rrk=2
