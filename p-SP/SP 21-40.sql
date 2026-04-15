@@ -32,3 +32,6 @@ end
 
 exec spget2ndhighestsalary
 @rrk=2
+
+--23 -Get nth highest salary
+create procedure spgetnthhighest
