@@ -35,3 +35,12 @@ exec spget2ndhighestsalary
 
 --23 -Get nth highest salary
 create procedure spgetnthhighest
+@rrk int
+as
+begin
+select * from(
+Select * , DENSE_RANK() over
+(order by Salary desc) as rrk
+from Employees
+)as temptable
+end
