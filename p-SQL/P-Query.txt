@@ -229,6 +229,7 @@ where YEAR(JoinDate) >YEAR(GETDATE())  -1
 
 
 //
+Select * from Employee
 
 
 
