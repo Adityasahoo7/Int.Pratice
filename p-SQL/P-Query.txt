@@ -233,6 +233,19 @@ Select * from Employee
 
 
 
+--DELETE DUPLICATE RECORD
+
+with cte as(
+Select * row_number()
+over (Partation by name , salary , age
+order by id
+) as ronumber
+
+)
+delete from cte 
+where ronumber >1
+
+
 
 
 
