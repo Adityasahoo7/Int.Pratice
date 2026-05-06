@@ -1,0 +1,8 @@
+//Get nth highest salary
+
+Select * from(
+Select * , dense_rank() 
+over (order by Salary desc) as rrk
+from Employee
+)as temptable
+where rrk  =3
