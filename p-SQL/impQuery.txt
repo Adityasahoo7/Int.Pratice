@@ -6,3 +6,13 @@ over (order by Salary desc) as rrk
 from Employee
 )as temptable
 where rrk  =3
+
+// Delete Duplicate Record
+with cte As(
+select empid,name ,email , row_number() 
+over (Partition by Email order by empid) as ronum
+from employee
+)
+
+delete from cte
+where ronum >1;
