@@ -246,6 +246,23 @@ delete from cte
 where ronumber >1
 
 
+->Find nth highest salary
+select * from(
+Select * , Dense_rank()
+over(order by Salary desc) as rrk
+from employee
+)as temptable
+where rrk =1
+
+-Delete duplicate record
+with cte as(
+select * ,row_number()
+over(partation by name ,age , phone order by id) as ronum
+from Employee
+)
+delete from cte where ronum>1
+
+
 
 
 
