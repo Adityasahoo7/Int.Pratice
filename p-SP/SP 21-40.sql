@@ -50,7 +50,9 @@ exec spgetnthhighest
 
 select * from Employees
 
-
+update Employees
+set Name ='Rahul Sharma'
+where EmpId =2
 
 --24 - Check if employee exists (return BIT).
 create procedure sp_checkempexist
@@ -68,3 +70,15 @@ end
 
 exec sp_checkempexist 
 @id =70
+
+--25 - Get employees with duplicate names.
+create procedure sp_getduplicateempname
+as
+begin
+set nocount on;
+select name from Employees
+group by Name
+having count(*) >1
+end
+
+exec sp_getduplicateempname
