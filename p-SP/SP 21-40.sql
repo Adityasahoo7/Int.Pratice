@@ -46,4 +46,25 @@ from Employees
 end
 DROP PROCEDURE spgetnthhighest;
 exec spgetnthhighest
-@rank =1
+@rank =1 
+
+select * from Employees
+
+
+
+--24 - Check if employee exists (return BIT).
+create procedure sp_checkempexist
+@id int
+as
+begin
+set nocount on;
+declare @exist bit;
+if exists(select 1 from Employees where EmpId= @id)
+set @exist=1;
+else
+set @exist=0;
+select @exist as Employeeexist
+end
+
+exec sp_checkempexist 
+@id =70
