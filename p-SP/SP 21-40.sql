@@ -82,3 +82,14 @@ having count(*) >1
 end
 
 exec sp_getduplicateempname
+
+--26- Get employees whose salary is above average.
+create procedure sp_getemployeewhichsalaryisaboveaverage
+as
+begin
+set nocount on 
+select * from Employees
+where Salary >(select AVG(Salary) from Employees)
+end
+
+exec sp_getemployeewhichsalaryisaboveaverage
