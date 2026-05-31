@@ -1,0 +1,551 @@
+AI + LLM + .NET Complete Roadmap (12 Weeks)
+
+Goal:
+By the end you should be able to explain AI concepts in interviews and build:
+
+AI Chatbots
+RAG Applications
+Resume Analyzers
+AI Agents
+MCP Integrations
+Enterprise AI Applications using .NET
+Module 1: AI Foundations (Week 1)
+Day 1
+
+Introduction to AI
+
+Topics:
+
+What is AI?
+History of AI
+Types of AI
+Narrow AI
+General AI
+Super AI
+Real-world AI Applications
+
+Outcome:
+
+Explain AI to an interviewer.
+Day 2
+
+Machine Learning Fundamentals
+
+Topics:
+
+What is ML?
+Why ML exists?
+Traditional Programming vs ML
+Training Data
+Features
+Labels
+Model
+
+Outcome:
+
+Understand why AI is different from normal programming.
+Day 3
+
+Machine Learning Types
+
+Topics:
+
+Supervised Learning
+Unsupervised Learning
+Reinforcement Learning
+
+Examples:
+
+Spam Detection
+Recommendation Systems
+Self-driving Cars
+Day 4
+
+Deep Learning
+
+Topics:
+
+Neural Networks
+Neurons
+Layers
+Activation Functions
+Forward Propagation
+
+Outcome:
+
+Understand what powers ChatGPT.
+Day 5
+
+Generative AI
+
+Topics:
+
+What is Generative AI?
+How it differs from ML
+Text Generation
+Image Generation
+Audio Generation
+
+Tools:
+
+ChatGPT
+Gemini
+Claude
+Day 6
+
+AI Terminologies
+
+Topics:
+
+Parameters
+Weights
+Training
+Inference
+Fine Tuning
+Dataset
+Day 7
+
+Revision + Interview Questions
+
+Module 2: LLM Fundamentals (Week 2)
+Day 8
+
+Introduction to LLM
+
+Topics:
+
+What is an LLM?
+GPT Architecture Overview
+Why LLMs are revolutionary
+Day 9
+
+Transformers
+
+Topics:
+
+What is Transformer Architecture?
+Encoder
+Decoder
+Attention Mechanism
+
+Interview Favorite Topic
+
+Day 10
+
+Tokens
+
+Topics:
+
+Tokenization
+Token Limits
+Context Window
+Day 11
+
+Embeddings
+
+Topics:
+
+Vector Representation
+Semantic Meaning
+Embedding Models
+Day 12
+
+Vector Mathematics
+
+Topics:
+
+Vectors
+Similarity Search
+Cosine Similarity
+Day 13
+
+How ChatGPT Works
+
+Topics:
+
+User Prompt
+Tokenization
+Embedding
+Prediction
+Response Generation
+Day 14
+
+Revision
+
+Module 3: Prompt Engineering (Week 3)
+Day 15
+
+Prompt Engineering Basics
+
+Day 16
+
+System Prompts
+
+Day 17
+
+Zero Shot Prompting
+
+Day 18
+
+One Shot Prompting
+
+Day 19
+
+Few Shot Prompting
+
+Day 20
+
+Chain of Thought Prompting
+
+Concept Only
+
+Day 21
+
+Prompt Engineering Practice
+
+Module 4: LLM APIs using .NET (Week 4)
+Day 22
+
+Introduction to APIs
+
+Topics:
+
+OpenAI API
+Gemini API
+Day 23
+
+Create First LLM Call
+
+C#
+
+HttpClient
+Day 24
+
+Chat Completion API
+
+Day 25
+
+Temperature
+
+Topics:
+
+Creativity
+Determinism
+Day 26
+
+Structured Output
+
+JSON Responses
+
+Day 27
+
+Function Calling
+
+Very Important
+
+Day 28
+
+Mini Project
+
+AI Chatbot
+
+Module 5: Embeddings & Vector Databases (Week 5)
+Day 29
+
+Embeddings Deep Dive
+
+Day 30
+
+Text to Vector Conversion
+
+Day 31
+
+Similarity Search
+
+Day 32
+
+Vector Databases
+
+Topics:
+
+Pinecone
+Qdrant
+Weaviate
+Day 33
+
+Store Embeddings
+
+Day 34
+
+Retrieve Embeddings
+
+Day 35
+
+Mini Project
+
+Semantic Search Engine
+
+Module 6: RAG (Week 6 & 7)
+Day 36
+
+What is RAG?
+
+Day 37
+
+Why RAG?
+
+Day 38
+
+Chunking
+
+Day 39
+
+Embedding Pipeline
+
+Day 40
+
+Retrieval Pipeline
+
+Day 41
+
+Generation Pipeline
+
+Day 42
+
+End-to-End RAG Flow
+
+Day 43
+
+PDF Processing
+
+Day 44
+
+Document Ingestion
+
+Day 45
+
+Hybrid Search
+
+Day 46
+
+Re-ranking
+
+Day 47
+
+Evaluation
+
+Day 48
+
+RAG Interview Questions
+
+Day 49
+
+Mini Project
+
+Company Policy Chatbot
+
+Module 7: Semantic Kernel (.NET) (Week 8)
+Day 50
+
+Introduction
+
+Topics:
+
+What is Semantic Kernel?
+Day 51
+
+Kernel Setup
+
+Day 52
+
+Prompts
+
+Day 53
+
+Plugins
+
+Day 54
+
+Memory
+
+Day 55
+
+Function Calling
+
+Day 56
+
+Mini Project
+
+AI Assistant
+
+Module 8: AI Agents (Week 9)
+Day 57
+
+What is an Agent?
+
+Day 58
+
+Agent Architecture
+
+Day 59
+
+Planning
+
+Day 60
+
+Tools
+
+Day 61
+
+Memory
+
+Day 62
+
+Multi-Agent Systems
+
+Day 63
+
+Mini Project
+
+Meeting Scheduler Agent
+
+Module 9: MCP (Week 10)
+Day 64
+
+What is MCP?
+
+Day 65
+
+MCP Architecture
+
+Day 66
+
+MCP Server
+
+Day 67
+
+MCP Client
+
+Day 68
+
+GitHub MCP
+
+Day 69
+
+Database MCP
+
+Day 70
+
+Mini Project
+
+.NET MCP Server
+
+Module 10: AI System Design (Week 11)
+Day 71
+
+AI Application Architecture
+
+Day 72
+
+Chatbot Design
+
+Day 73
+
+RAG Design
+
+Day 74
+
+Agent Design
+
+Day 75
+
+Scaling AI Applications
+
+Day 76
+
+Cost Optimization
+
+Day 77
+
+Security
+
+Module 11: Enterprise AI (.NET) (Week 12)
+Day 78
+
+AI in HRMS
+
+Day 79
+
+AI in CRM
+
+Day 80
+
+AI in Healthcare
+
+Day 81
+
+AI in Finance
+
+Day 82
+
+AI Monitoring
+
+Day 83
+
+Observability
+
+Day 84
+
+Production Deployment
+
+Final Projects
+Project 1
+
+AI Resume Analyzer
+
+Project 2
+
+AI Interview Question Generator
+
+Project 3
+
+AI Document Search
+
+Project 4
+
+Enterprise RAG Application
+
+Project 5
+
+AI HR Assistant
+
+Project 6
+
+MCP-based AI Assistant
+
+Interview Preparation Topics (Must Master)
+
+Before applying for AI-focused .NET roles, be able to answer:
+
+What is AI?
+What is ML?
+What is Deep Learning?
+What is Generative AI?
+What is an LLM?
+What are Tokens?
+What are Embeddings?
+What is a Vector Database?
+What is Cosine Similarity?
+What is RAG?
+What is Chunking?
+What is Function Calling?
+What is Semantic Kernel?
+What are AI Agents?
+What is MCP?
+How does ChatGPT work internally?
+How would you build an enterprise chatbot?
+How would you secure an AI application?
+How would you reduce token cost?
+How would you design a RAG system?
+
+This syllabus takes you from "I only know .NET and Angular" to "I can design and build enterprise AI applications and discuss the architecture confidently in interviews."
