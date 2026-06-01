@@ -93,3 +93,24 @@ where Salary >(select AVG(Salary) from Employees)
 end
 
 exec sp_getemployeewhichsalaryisaboveaverage
+
+--27 : Get department with highest total salary.
+create procedure spgethighestsalbydept
+as
+begin
+set nocount on
+Select TOP 1 
+DeptId, Sum(Salary) as TotalSalary
+from Employees 
+group by DeptId
+order by Sum(Salary) desc
+end
+
+exec spgethighestsalbydept
+
+
+
+
+
+
+
