@@ -1,0 +1,239 @@
+================================================================================
+       SQL SERVER - STORED PROCEDURE QUESTIONS (50)
+       For: Full Stack .NET Developer Interview Preparation
+================================================================================
+
+Topics Covered: CREATE/ALTER/DROP, Input/Output Parameters, Default Parameters,
+                Return Values, Error Handling, TRY...CATCH, Transactions,
+                Dynamic SQL, Cursors, Temp Tables, Recursive SP, System SPs,
+                Security, Performance, Real-World Scenarios
+
+================================================================================
+                        SECTION 1: EASY (Questions 1 - 15)
+================================================================================
+
+--- BASICS ---
+
+1.  Write a stored procedure named usp_GetAllEmployees that returns
+    all records from the Employees table.
+
+2.  Write a stored procedure named usp_GetEmployeeByID that accepts
+    an EmployeeID as an input parameter and returns that employee's details.
+
+3.  Write a stored procedure named usp_InsertEmployee that accepts
+    FirstName, LastName, DepartmentID, and Salary as input parameters
+    and inserts a new employee record.
+
+4.  Write a stored procedure named usp_UpdateEmployeeSalary that accepts
+    EmployeeID and NewSalary as parameters and updates the salary.
+
+5.  Write a stored procedure named usp_DeleteEmployee that accepts
+    EmployeeID and deletes the matching record.
+
+6.  Write a stored procedure that accepts a DepartmentName parameter
+    and returns all employees in that department.
+
+7.  Write a stored procedure with a default parameter value —
+    if no DepartmentID is passed, return all employees; otherwise
+    filter by the given DepartmentID.
+
+8.  Write a stored procedure that returns the total count of employees
+    using an OUTPUT parameter named @TotalCount.
+
+9.  Write a stored procedure that returns a value using RETURN statement
+    (e.g., return 1 for success, 0 for failure).
+
+10. Write a stored procedure named usp_SearchEmployees that accepts
+    a @SearchTerm parameter and searches by FirstName or LastName
+    using LIKE.
+
+--- MULTIPLE PARAMETERS ---
+
+11. Write a stored procedure to filter employees by Department,
+    MinSalary, and MaxSalary — all parameters optional (use NULL check).
+
+12. Write a stored procedure that accepts a list concept — accept a
+    comma-separated string of DepartmentIDs and return employees
+    from those departments using STRING_SPLIT.
+
+13. Write a stored procedure named usp_GetOrdersByDateRange that
+    accepts @StartDate and @EndDate and returns orders within that range.
+
+14. Write a stored procedure to get a paginated list of employees —
+    accept @PageNumber and @PageSize parameters and use OFFSET-FETCH.
+
+15. Write a stored procedure that accepts an EmployeeID and returns
+    both employee details and their manager's name using OUTPUT parameters.
+
+
+================================================================================
+                       SECTION 2: MEDIUM (Questions 16 - 35)
+================================================================================
+
+--- ERROR HANDLING ---
+
+16. Write a stored procedure using TRY...CATCH that inserts a record
+    and rolls back the transaction if any error occurs, returning
+    the error message to the caller.
+
+17. Write a stored procedure that uses ERROR_NUMBER(),
+    ERROR_MESSAGE(), ERROR_LINE(), and ERROR_SEVERITY() inside
+    a CATCH block to log errors to an ErrorLog table.
+
+18. Write a stored procedure that deliberately raises a custom error
+    using THROW when a business rule is violated (e.g., salary < 0).
+
+19. Write a stored procedure using RAISERROR to send a warning-level
+    message back to the calling application.
+
+20. Write a stored procedure that wraps multiple INSERT and UPDATE
+    operations in a transaction with proper TRY...CATCH and
+    ROLLBACK on failure.
+
+--- TRANSACTIONS IN STORED PROCEDURES ---
+
+21. Write a stored procedure to transfer funds between two bank
+    accounts (debit one, credit another) with full transaction
+    handling and rollback on failure.
+
+22. Write a stored procedure that uses SAVE TRANSACTION to partially
+    roll back only a specific operation within a larger transaction.
+
+23. Write a stored procedure that checks @@TRANCOUNT before committing
+    to avoid committing a nested transaction prematurely.
+
+24. Write a stored procedure for order placement that:
+    - Checks stock availability
+    - Deducts stock
+    - Creates an order record
+    - All within a single transaction with rollback on any failure.
+
+--- TEMP TABLES & TABLE VARIABLES IN SPs ---
+
+25. Write a stored procedure that uses a local temp table (#TempData)
+    to store intermediate results and then returns the final aggregated result.
+
+26. Write a stored procedure that uses a table variable (@TableVar)
+    to process employee records in batches.
+
+27. Write a stored procedure that creates a temp table, populates it
+    with dynamic data based on input parameters, and returns the result.
+
+--- DYNAMIC SQL IN STORED PROCEDURES ---
+
+28. Write a stored procedure that accepts a @TableName parameter and
+    returns the row count of any table using dynamic SQL with
+    sp_executesql.
+
+29. Write a stored procedure with flexible search — accept optional
+    filter parameters (Name, Department, Salary) and build a dynamic
+    WHERE clause using dynamic SQL.
+
+30. Write a stored procedure that generates and executes a dynamic
+    ORDER BY clause based on a passed column name and sort direction.
+
+--- CURSORS ---
+
+31. Write a stored procedure using a CURSOR to iterate through all
+    employees and give a 10% salary raise to those earning below 30000,
+    one by one.
+
+32. Write a stored procedure using a FAST_FORWARD cursor to generate
+    a comma-separated list of employee names from a department.
+
+33. Write a stored procedure using a cursor to process and archive
+    old orders (older than 1 year) row by row into an archive table.
+
+    Note: Also write the set-based (non-cursor) equivalent and explain
+    when cursors are justified.
+
+--- STORED PROCEDURE WITH OUTPUT + RETURN ---
+
+34. Write a stored procedure that:
+    - Accepts CustomerID as input
+    - Returns total order count via OUTPUT parameter
+    - Returns total order value via OUTPUT parameter
+    - Returns 1 if customer exists, 0 if not via RETURN value
+
+35. Write a stored procedure that validates login credentials, returns
+    a status code via RETURN (1=success, 2=wrong password, 3=user not found)
+    and the UserID via an OUTPUT parameter.
+
+
+================================================================================
+                        SECTION 3: HARD (Questions 36 - 50)
+================================================================================
+
+--- ADVANCED & REAL-WORLD SCENARIOS ---
+
+36. Write a stored procedure to implement upsert logic (INSERT if not exists,
+    UPDATE if exists) using MERGE statement for the Employees table.
+
+37. Write a stored procedure that generates a monthly sales report dynamically
+    — columns are month names (Jan, Feb...) built at runtime using
+    dynamic SQL and PIVOT.
+
+38. Write a stored procedure to implement Slow Changing Dimension Type 2 (SCD2):
+    - Accept updated employee details
+    - Expire the current record (set EndDate, IsActive = 0)
+    - Insert new record as active version
+
+39. Write a stored procedure that accepts a JSON string as input,
+    parses it using OPENJSON, and performs bulk insert into the
+    Employees table.
+
+40. Write a stored procedure to perform a bulk upsert from a staging
+    table into a production table using MERGE, handling INSERT,
+    UPDATE, and DELETE in one statement.
+
+41. Write a stored procedure that rebuilds or reorganizes indexes on
+    a given table based on fragmentation level — reorganize if
+    fragmentation is between 10-30%, rebuild if above 30%.
+
+42. Write a stored procedure to purge old records from a large table
+    in batches (e.g., delete 1000 rows at a time) to avoid log bloat
+    and blocking.
+
+43. Write a stored procedure that detects and logs all long-running
+    queries (over 5 seconds) from sys.dm_exec_requests into a
+    monitoring table.
+
+44. Write a stored procedure that accepts a parent EmployeeID and
+    returns the full organizational hierarchy beneath that employee
+    using a recursive CTE internally.
+
+45. Write a stored procedure to implement optimistic concurrency:
+    - Accept EmployeeID, new data, and a @RowVersion parameter
+    - Check if the row was modified since the caller last read it
+    - If modified, return a conflict error; else perform the update
+
+46. Write a stored procedure to calculate and store monthly KPIs
+    (total orders, revenue, new customers, avg order value) into a
+    KPI summary table — designed to be run by a SQL Agent Job.
+
+47. Write a stored procedure to generate INSERT scripts for all rows
+    in a given table dynamically — useful for data migration scripts.
+
+48. Write a stored procedure that accepts a table name and column name
+    and returns the top 10 most frequent values in that column
+    using dynamic SQL.
+
+49. Write a stored procedure that compares data between two tables
+    (source and target) with the same schema and returns:
+    - Rows only in source
+    - Rows only in target
+    - Rows with different values (matched by key but data differs)
+
+50. Write a stored procedure for an e-commerce checkout process that:
+    - Validates cart items and stock
+    - Calculates totals with discounts
+    - Creates Order and OrderItems records
+    - Updates stock quantities
+    - Logs the transaction
+    - Handles all failures with full rollback
+    - Returns order summary via OUTPUT parameters
+
+================================================================================
+                              END OF FILE
+                       Total Questions: 50
+================================================================================

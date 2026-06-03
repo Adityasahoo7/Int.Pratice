@@ -1,0 +1,528 @@
+================================================================================
+         SQL SERVER - QUERY QUESTIONS (150+)
+         For: Full Stack .NET Developer Interview Preparation
+================================================================================
+
+Topics Covered: SELECT, WHERE, JOINs, GROUP BY, HAVING, ORDER BY, Subqueries,
+                CTEs, Window Functions, Aggregates, Indexes, Transactions,
+                String Functions, Date Functions, NULL Handling, PIVOT/UNPIVOT,
+                Performance Tuning, SET Operations, JSON, Temp Tables
+
+================================================================================
+                        SECTION 1: EASY (Questions 1 - 50)
+================================================================================
+
+--- SELECT & WHERE ---
+
+1.  Write a query to retrieve all columns from the Employees table.
+
+2.  Write a query to fetch only the EmployeeID, FirstName, and Salary columns
+    from the Employees table.
+
+3.  Write a query to get all employees whose Salary is greater than 50000.
+
+4.  Write a query to find all employees whose FirstName starts with the
+    letter 'A'.
+
+5.  Write a query to retrieve all employees who belong to the 'HR' department.
+
+6.  Write a query to get all records from the Orders table where the
+    OrderDate is after '2023-01-01'.
+
+7.  Write a query to find employees whose Salary is between 30000 and 60000.
+
+8.  Write a query to fetch all products where the Category is either
+    'Electronics' or 'Clothing'.
+
+9.  Write a query to retrieve all employees where the ManagerID is NULL.
+
+10. Write a query to get all orders where the CustomerID is NOT NULL.
+
+--- SORTING & LIMITING ---
+
+11. Write a query to fetch the top 10 highest paid employees.
+
+12. Write a query to retrieve employees ordered by LastName in ascending order.
+
+13. Write a query to get the 5 most recently placed orders.
+
+14. Write a query to fetch employees sorted by Department ascending,
+    then Salary descending.
+
+15. Write a query using OFFSET-FETCH to get records 11 to 20 from
+    the Employees table ordered by EmployeeID.
+
+--- AGGREGATE FUNCTIONS ---
+
+16. Write a query to find the total number of employees in the company.
+
+17. Write a query to calculate the average salary of all employees.
+
+18. Write a query to find the highest salary in the Employees table.
+
+19. Write a query to find the lowest salary in the Employees table.
+
+20. Write a query to get the total sales amount from the Orders table.
+
+21. Write a query to count the number of orders placed by each customer.
+
+22. Write a query to find the maximum and minimum order amount
+    per department.
+
+23. Write a query to get the total salary paid per department.
+
+--- GROUP BY & HAVING ---
+
+24. Write a query to get the number of employees in each department.
+
+25. Write a query to find departments where the average salary
+    is greater than 50000.
+
+26. Write a query to list all departments with more than 5 employees.
+
+27. Write a query to find the total number of products in each category.
+
+28. Write a query to get customers who have placed more than 3 orders.
+
+--- STRING FUNCTIONS ---
+
+29. Write a query to convert the FirstName column to uppercase.
+
+30. Write a query to concatenate FirstName and LastName with a space
+    in between.
+
+31. Write a query to find the length of each employee's FirstName.
+
+32. Write a query to extract the first 3 characters of the ProductCode column.
+
+33. Write a query to replace 'Manager' with 'Lead' in the JobTitle column.
+
+34. Write a query to trim leading and trailing spaces from the
+    EmployeeName column.
+
+35. Write a query to find all employees whose LastName contains 'son'.
+
+--- DATE FUNCTIONS ---
+
+36. Write a query to get the current date and time.
+
+37. Write a query to find all orders placed in the year 2023.
+
+38. Write a query to calculate the number of days between OrderDate
+    and DeliveryDate.
+
+39. Write a query to get the month number from the OrderDate column.
+
+40. Write a query to add 30 days to the OrderDate and show it as
+    ExpectedDelivery.
+
+41. Write a query to find all employees hired in the last 6 months.
+
+42. Write a query to extract only the year from the HireDate column.
+
+--- NULL HANDLING ---
+
+43. Write a query to replace NULL values in the ManagerID column with 0
+    using ISNULL.
+
+44. Write a query using COALESCE to return the first non-NULL value
+    from Phone, AlternatePhone, and Email columns.
+
+45. Write a query to find all records where the Discount column is NULL.
+
+46. Write a query to update NULL salary values to 30000.
+
+--- DISTINCT & ALIASES ---
+
+47. Write a query to get distinct Department names from the Employees table.
+
+48. Write a query to get distinct Country values from the Customers table.
+
+49. Write a query using column aliases to display EmployeeID as "ID"
+    and FullName as "Employee Name".
+
+50. Write a query to count distinct product categories in the Products table.
+
+
+================================================================================
+                       SECTION 2: MEDIUM (Questions 51 - 110)
+================================================================================
+
+--- JOINS ---
+
+51. Write a query to get employee names along with their department names
+    using INNER JOIN.
+
+52. Write a query to find all employees who do not have a matching
+    department using LEFT JOIN.
+
+53. Write a query to get all departments including those with no employees
+    using RIGHT JOIN.
+
+54. Write a query to get all combinations of employees and projects
+    using CROSS JOIN.
+
+55. Write a query using SELF JOIN to find employees and their managers
+    from the same Employees table.
+
+56. Write a query to get customer names and their order details using JOIN.
+    Include customers who have never placed an order.
+
+57. Write a query to join 3 tables: Employees, Departments, and Locations
+    to display employee name, department, and city.
+
+58. Write a query to find products that have never been ordered using
+    LEFT JOIN with NULL check.
+
+59. Write a query to get all orders along with customer and product details
+    using multiple JOINs.
+
+60. Write a query to find duplicate email addresses in the Customers table
+    using a self-join or GROUP BY.
+
+--- SUBQUERIES ---
+
+61. Write a query to find employees whose salary is above the
+    average salary using a subquery.
+
+62. Write a query to get the details of the employee with the
+    highest salary using a subquery.
+
+63. Write a query to find all products whose price is greater than
+    the average price of their category.
+
+64. Write a query using EXISTS to find customers who have placed
+    at least one order.
+
+65. Write a query using NOT EXISTS to find customers who have
+    never placed an order.
+
+66. Write a query using IN to find employees who work in
+    'IT' or 'Finance' departments.
+
+67. Write a query using NOT IN to find products that are not in
+    a specific category list.
+
+68. Write a correlated subquery to find employees who earn more
+    than the average salary of their own department.
+
+69. Write a query to find the second highest salary using a subquery.
+
+70. Write a query to find the Nth highest salary using a subquery
+    (parameterize N).
+
+--- CTEs (Common Table Expressions) ---
+
+71. Write a query using a CTE to find the top 5 highest paid employees.
+
+72. Write a query using a CTE to calculate the running total of
+    sales by month.
+
+73. Write a recursive CTE to display an employee hierarchy
+    (employee and all their subordinates).
+
+74. Write a recursive CTE to generate a number series from 1 to 100.
+
+75. Write a query using multiple CTEs to find departments where
+    total salary exceeds the company average.
+
+76. Write a CTE to find customers who placed orders in consecutive months.
+
+77. Write a query using a CTE to rank employees by salary within
+    each department.
+
+--- WINDOW FUNCTIONS ---
+
+78. Write a query using ROW_NUMBER() to assign a unique row number
+    to each employee ordered by Salary descending.
+
+79. Write a query using RANK() to rank employees by salary within
+    each department (with gaps for ties).
+
+80. Write a query using DENSE_RANK() to rank employees by salary
+    within each department (without gaps).
+
+81. Write a query using NTILE(4) to divide employees into 4 salary
+    quartiles.
+
+82. Write a query using LAG() to compare each employee's salary with
+    the previous employee's salary.
+
+83. Write a query using LEAD() to compare each month's sales with
+    the next month's sales.
+
+84. Write a query using SUM() OVER() to calculate a running total
+    of sales ordered by date.
+
+85. Write a query using AVG() OVER(PARTITION BY) to show each employee's
+    salary alongside the department average.
+
+86. Write a query using FIRST_VALUE() to show the highest salary
+    in each department next to every employee.
+
+87. Write a query using LAST_VALUE() with proper ROWS BETWEEN clause
+    to get the last salary in each department.
+
+--- SET OPERATIONS ---
+
+88. Write a query using UNION to combine employee names from two
+    different branch tables.
+
+89. Write a query using UNION ALL to combine sales data from
+    two years including duplicates.
+
+90. Write a query using INTERSECT to find customers who bought
+    products from both Category A and Category B.
+
+91. Write a query using EXCEPT to find products that were available
+    last year but not this year.
+
+--- PIVOT / UNPIVOT ---
+
+92. Write a query using PIVOT to display total sales for each product
+    category as columns (Jan, Feb, Mar).
+
+93. Write a query using UNPIVOT to convert monthly sales columns
+    into rows.
+
+--- TEMP TABLES & TABLE VARIABLES ---
+
+94. Write a query to create a temporary table, insert data into it,
+    and query from it.
+
+95. Write a query to create a table variable and use it to store
+    intermediate results.
+
+96. Write a query using a Global Temp Table (##) and explain the
+    difference from a local temp table.
+
+--- INDEXES ---
+
+97. Write a query to create a clustered index on the EmployeeID column
+    of the Employees table.
+
+98. Write a query to create a non-clustered index on the Email column
+    of the Customers table.
+
+99. Write a query to create a composite non-clustered index on
+    LastName and FirstName columns.
+
+100. Write a query to find which indexes exist on the Employees table
+     using system views.
+
+--- TRANSACTIONS ---
+
+101. Write a query demonstrating a basic BEGIN TRANSACTION, COMMIT,
+     and ROLLBACK.
+
+102. Write a query using SAVE TRANSACTION to set a savepoint and
+     rollback to it.
+
+103. Write a query to transfer amount between two bank accounts
+     using a transaction ensuring atomicity.
+
+104. Write a query to demonstrate how to handle errors inside a
+     transaction using TRY...CATCH.
+
+--- ERROR HANDLING ---
+
+105. Write a query using TRY...CATCH to handle a divide-by-zero error.
+
+106. Write a query using THROW to raise a custom error message.
+
+107. Write a query using RAISERROR with severity and state parameters.
+
+--- MISCELLANEOUS ---
+
+108. Write a query using CASE WHEN to categorize employees as
+     'Low', 'Mid', or 'High' based on their salary range.
+
+109. Write a query using IIF() as a shorthand conditional expression.
+
+110. Write a query to find all employees whose salary is in the
+     top 10% of the company using PERCENT.
+
+
+================================================================================
+                        SECTION 3: HARD (Questions 111 - 160)
+================================================================================
+
+--- ADVANCED WINDOW FUNCTIONS ---
+
+111. Write a query to find the running average of sales per salesperson
+     using window functions, resetting at each new year.
+
+112. Write a query using ROW_NUMBER() with a CTE to delete duplicate
+     rows from a table keeping only the first occurrence.
+
+113. Write a query to calculate the percentage contribution of each
+     product's sales to the total sales using window functions.
+
+114. Write a query to find the difference between each employee's salary
+     and the next higher salary in the same department using LEAD().
+
+115. Write a query to identify gaps in a sequential ID column using
+     window functions (missing IDs in a sequence).
+
+--- ADVANCED CTEs & RECURSION ---
+
+116. Write a recursive CTE to calculate the factorial of a number.
+
+117. Write a recursive CTE to traverse a category hierarchy tree
+     (parent-child relationship) and show full path for each node.
+
+118. Write a query using a recursive CTE to find all direct and
+     indirect reports of a specific manager.
+
+119. Write a CTE-based query to implement pagination manually
+     without using OFFSET-FETCH.
+
+120. Write a query to find the longest consecutive streak of days
+     a user logged into the system using CTEs and window functions.
+
+--- PERFORMANCE & OPTIMIZATION ---
+
+121. Write a query to identify the top 5 most expensive queries
+     using sys.dm_exec_query_stats.
+
+122. Write a query to find tables with missing indexes using
+     sys.dm_db_missing_index_details.
+
+123. Write a query using WITH (NOLOCK) hint and explain when to
+     use and avoid it.
+
+124. Write a query to check index fragmentation on all indexes
+     in the current database.
+
+125. Write a query to rebuild and reorganize fragmented indexes
+     based on a fragmentation threshold.
+
+126. Write a query to find blocking queries and the sessions causing
+     them using sys.dm_exec_requests.
+
+127. Write a query to check the size of all tables in the current
+     database using sys.dm_db_partition_stats.
+
+--- ADVANCED JOINS & SUBQUERIES ---
+
+128. Write a query to find employees who have the same salary as
+     at least one other employee in a different department.
+
+129. Write a query to find the top 3 selling products in each
+     category using ROW_NUMBER() or DENSE_RANK().
+
+130. Write a query to find customers who placed orders every single
+     month for the entire last year.
+
+131. Write a query to find the median salary from the Employees table
+     without using any built-in median function.
+
+132. Write a query to find all pairs of employees in the same department
+     whose combined salary exceeds 100000.
+
+133. Write a query to transpose rows into columns dynamically using
+     dynamic SQL and PIVOT.
+
+--- DYNAMIC SQL ---
+
+134. Write a query using dynamic SQL (EXEC sp_executesql) to search
+     any column of a table for a value passed as a parameter.
+
+135. Write a dynamic SQL query to generate a PIVOT table where column
+     names are not known at compile time.
+
+136. Write a query using dynamic SQL to build and execute a flexible
+     search filter based on multiple optional parameters.
+
+--- JSON IN SQL SERVER ---
+
+137. Write a query to read data from a JSON string using OPENJSON()
+     and return it as a relational result set.
+
+138. Write a query using FOR JSON PATH to convert a query result
+     into a JSON string.
+
+139. Write a query using FOR JSON AUTO and explain how it differs
+     from FOR JSON PATH.
+
+140. Write a query to update a specific property inside a JSON column
+     using JSON_MODIFY().
+
+--- ADVANCED TRANSACTIONS & LOCKING ---
+
+141. Write a query to demonstrate the difference between READ COMMITTED
+     and READ UNCOMMITTED isolation levels.
+
+142. Write a query to set SNAPSHOT isolation level and explain how it
+     prevents dirty reads without locking.
+
+143. Write a query to demonstrate a deadlock scenario between two
+     sessions and explain how SQL Server resolves it.
+
+144. Write a query using UPDLOCK and HOLDLOCK hints to prevent
+     phantom reads in a transaction.
+
+--- PARTITIONING ---
+
+145. Write a query to create a partition function and partition scheme
+     on the OrderDate column for an Orders table.
+
+146. Write a query to check which partition a specific row belongs to
+     using $PARTITION function.
+
+147. Write a query to query data from a specific partition only
+     using partition elimination.
+
+--- ADVANCED AGGREGATION ---
+
+148. Write a query using GROUPING SETS to get subtotals and grand totals
+     in a single query.
+
+149. Write a query using ROLLUP to generate subtotals for sales by
+     Year, Quarter, and Month.
+
+150. Write a query using CUBE to generate all possible combinations
+     of subtotals for Region, Category, and Month.
+
+151. Write a query to calculate a year-over-year growth percentage
+     for sales using LAG() or a self-join.
+
+152. Write a query to find the busiest hour of the day based on
+     order timestamps using DATEPART and GROUP BY.
+
+--- REAL-WORLD SCENARIO QUESTIONS ---
+
+153. You have an Orders table with 50 million rows. Write an optimized
+     query to find the total revenue per customer for the current month.
+     Explain your indexing strategy.
+
+154. Write a query to detect and remove duplicate rows from a
+     Transactions table where no unique key exists, keeping only
+     the row with the latest timestamp.
+
+155. Write a query to implement a slow changing dimension (SCD Type 2)
+     update — expire old records and insert new ones based on changed values.
+
+156. Write a query to generate a complete sales report showing:
+     total sales, rank, running total, and % of grand total
+     per product category in a single query.
+
+157. Write a query to find all customers who have not placed any order
+     in the last 90 days but had placed orders in the 90 days before that
+     (churned customers).
+
+158. Write a query to find the most common sequence of pages visited
+     in a web session log table (sessionID, pageURL, visitTime).
+
+159. Write a query to implement optimistic concurrency — check if a
+     record was modified by another user before updating, using a
+     rowversion or timestamp column.
+
+160. You are given a table of stock prices (StockID, Date, Price).
+     Write a query to calculate the 7-day moving average price
+     for each stock.
+
+================================================================================
+                              END OF FILE
+                       Total Questions: 160
+================================================================================

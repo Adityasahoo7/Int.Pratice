@@ -1,0 +1,249 @@
+================================================================================
+         SQL SERVER - VIEW QUESTIONS (50)
+         For: Full Stack .NET Developer Interview Preparation
+================================================================================
+
+Topics Covered: CREATE/ALTER/DROP VIEW, Simple Views, Complex Views,
+                Joins in Views, Aggregates in Views, Indexed Views,
+                Partitioned Views, WITH CHECK OPTION, WITH SCHEMABINDING,
+                Updatable Views, Security/Permissions, System Views,
+                Performance, Real-World Scenarios
+
+================================================================================
+                        SECTION 1: EASY (Questions 1 - 15)
+================================================================================
+
+--- BASICS ---
+
+1.  Write a CREATE VIEW statement named vw_AllEmployees that returns
+    all columns from the Employees table.
+
+2.  Write a view named vw_EmployeeNames that returns only EmployeeID,
+    FirstName, LastName, and Department from the Employees table.
+
+3.  Write a view named vw_ActiveEmployees that filters only employees
+    where IsActive = 1.
+
+4.  Write a view named vw_HighSalaryEmployees that returns employees
+    with a Salary greater than 70000.
+
+5.  Write a view named vw_RecentOrders that returns orders placed
+    in the last 30 days.
+
+6.  Write a query to ALTER an existing view vw_ActiveEmployees
+    to also include the HireDate column.
+
+7.  Write a query to DROP a view named vw_OldReport if it exists.
+
+8.  Write a query to list all views in the current database using
+    system catalog views (INFORMATION_SCHEMA or sys.views).
+
+9.  Write a query to get the definition (source code) of an existing
+    view using system functions or catalog views.
+
+10. Write a view named vw_ProductCatalog that returns ProductID,
+    ProductName, Category, and Price from the Products table,
+    excluding discontinued products.
+
+--- VIEWS WITH JOINS ---
+
+11. Write a view named vw_EmployeeDepartment that joins the Employees
+    and Departments tables to show EmployeeName, DepartmentName,
+    and Location.
+
+12. Write a view named vw_OrderDetails that joins Orders, Customers,
+    and Products tables to return a summary of each order.
+
+13. Write a view named vw_EmployeeManager that uses a SELF JOIN on the
+    Employees table to show each employee alongside their manager's name.
+
+14. Write a view named vw_CustomerOrders that shows all customers
+    including those with no orders (use LEFT JOIN).
+
+15. Write a view that joins 3 tables — Products, Categories, and
+    Suppliers — and returns product details with supplier and
+    category information.
+
+
+================================================================================
+                       SECTION 2: MEDIUM (Questions 16 - 35)
+================================================================================
+
+--- AGGREGATE VIEWS ---
+
+16. Write a view named vw_DepartmentSalarySummary that shows each
+    department with total employees, average salary, min salary,
+    and max salary.
+
+17. Write a view named vw_MonthlySales that returns total sales amount
+    grouped by year and month.
+
+18. Write a view named vw_TopCustomers that returns customers with their
+    total order count and total spend, ordered by total spend descending.
+
+19. Write a view named vw_ProductSalesRank that uses RANK() to rank
+    products by their total quantity sold.
+
+20. Write a view named vw_EmployeeSalaryBand that uses CASE WHEN to
+    categorize employees as 'Junior', 'Mid', or 'Senior' based on
+    their salary range.
+
+--- WITH SCHEMABINDING ---
+
+21. Write a view using WITH SCHEMABINDING on the Employees table
+    and explain what SCHEMABINDING does and why it is important.
+
+22. Write a view with SCHEMABINDING and explain why you cannot drop
+    or alter the underlying table columns once the view is bound.
+
+23. Write a view with SCHEMABINDING that references columns from
+    two joined tables — note the two-part naming requirement
+    (schema.table format).
+
+--- WITH CHECK OPTION ---
+
+24. Write an updatable view named vw_HREmployees that filters employees
+    by Department = 'HR', and add WITH CHECK OPTION.
+    Explain what happens when you try to insert an employee with
+    a different department through this view.
+
+25. Write a view WITH CHECK OPTION on the Orders table to only allow
+    orders with a valid (non-null) CustomerID to be inserted or
+    updated through the view.
+
+--- UPDATABLE VIEWS ---
+
+26. Write a simple updatable view and demonstrate an INSERT, UPDATE,
+    and DELETE through the view.
+
+27. Explain with an example when a view becomes non-updatable —
+    list at least 4 conditions that make a view read-only.
+
+28. Write a view on a single table without GROUP BY, DISTINCT, or
+    aggregate functions, and show how you can update the base table
+    through it.
+
+--- INDEXED VIEWS (Materialized Views) ---
+
+29. Write a CREATE VIEW statement with SCHEMABINDING and then
+    create a unique clustered index on it to make it an indexed view.
+    Use a simple aggregation (SUM of sales per product).
+
+30. Explain with a query example the requirements for creating an
+    indexed view in SQL Server — list all conditions that must be met.
+
+31. Write an indexed view named vw_TotalSalesByProduct that stores
+    pre-aggregated total quantity and total revenue per product.
+    Explain when SQL Server uses this view automatically.
+
+32. Write a query to check whether SQL Server's query optimizer is
+    using an indexed view in an execution plan using NOEXPAND hint.
+
+--- PARTITIONED VIEWS ---
+
+33. Write an example of a local partitioned view that combines data
+    from three tables (Orders_2021, Orders_2022, Orders_2023)
+    using UNION ALL.
+
+34. Explain with a query how CHECK constraints on the underlying
+    tables help SQL Server perform partition elimination in a
+    partitioned view.
+
+35. Write a distributed partitioned view concept using linked servers —
+    explain the use case and the requirement for it to be updatable.
+
+
+================================================================================
+                        SECTION 3: HARD (Questions 36 - 50)
+================================================================================
+
+--- ADVANCED & REAL-WORLD SCENARIOS ---
+
+36. Write a view named vw_EmployeeHierarchy that uses a recursive CTE
+    internally to flatten the entire org chart, showing each employee's
+    full management chain as a path string
+    (e.g., "CEO > VP > Manager > Employee").
+
+37. Write a view that dynamically calculates each product's price
+    relative to the category average, labeling it as 'Above Average',
+    'Average', or 'Below Average' using window functions inside the view.
+
+38. Write a view named vw_CustomerLifetimeValue that calculates for
+    each customer:
+    - Total orders placed
+    - Total revenue generated
+    - Average order value
+    - Days since first order
+    - Days since last order
+    - Customer status (Active/Churned based on last 90 days)
+
+39. Write an indexed view to support a high-performance dashboard query
+    that shows total sales by Region and Category. Explain the indexing
+    strategy and when to choose indexed views over regular indexes.
+
+40. Write a view named vw_RunningTotalSales that uses SUM() OVER()
+    with ORDER BY to show a running total of daily sales.
+    Note: Explain why you cannot create an indexed view on this.
+
+41. Write a view that joins the system DMVs (Dynamic Management Views)
+    to return a list of currently executing queries with their
+    session ID, query text, CPU time, and elapsed time — useful
+    for a DBA monitoring dashboard.
+
+42. Write a view using FOR JSON PATH inside it to return employee
+    records as a JSON-formatted column.
+    Explain the use case for this in an API-serving scenario.
+
+43. You have a multi-tenant database where each tenant's data is
+    separated by a TenantID column. Write a view that automatically
+    filters data for the current user's tenant using SESSION_CONTEXT()
+    or a user-defined function. Explain the security implications.
+
+44. Write a view that detects data quality issues in the Customers table —
+    returning rows where Email is invalid (no @ symbol), Phone has
+    non-numeric characters, or PostalCode length is incorrect.
+    Explain how this view can be used in a data quality pipeline.
+
+45. Write a view named vw_InventoryAlerts that flags products where:
+    - StockQuantity < ReorderLevel (Low Stock)
+    - StockQuantity = 0 (Out of Stock)
+    - ExpiryDate < GETDATE() + 30 (Expiring Soon)
+    Include a calculated AlertType and AlertPriority column.
+
+46. Write a view to support row-level security manually (before RLS
+    was introduced) — filter rows based on the currently logged-in
+    SQL user using SUSER_SNAME() or USER_NAME().
+    Explain how this was later replaced by SQL Server's native
+    Row Level Security (RLS) feature.
+
+47. Explain with examples the performance implications of using views
+    inside views (nested views). Write a scenario query and explain
+    why it can lead to poor query plans and how to diagnose it using
+    execution plans.
+
+48. Write a view named vw_SalesForecast that uses historical monthly
+    sales data and LAG() to show:
+    - Current month sales
+    - Previous month sales
+    - Month-over-month growth %
+    - 3-month moving average
+    All in a single view.
+
+49. You are building a reporting layer for a .NET Web API. Write a set
+    of views that abstract the underlying normalized schema into a
+    denormalized reporting-friendly format. Include:
+    - vw_SalesReport (order + customer + product details)
+    - vw_HRReport (employee + department + location)
+    - vw_InventoryReport (product + stock + supplier)
+    Explain the benefits and risks of this view-based abstraction layer.
+
+50. Write a view named vw_DeadlockCandidates that queries SQL Server's
+    DMVs (sys.dm_exec_requests, sys.dm_os_waiting_tasks) to show
+    sessions that are blocking or being blocked, the query being run,
+    the wait type, and wait duration — useful for proactive deadlock
+    detection in a production environment.
+
+================================================================================
+                              END OF FILE
+                       Total Questions: 50
+================================================================================
