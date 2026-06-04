@@ -1,0 +1,960 @@
+================================================================================
+      SQL SERVER - COMPLETE TABLE SETUP SCRIPT
+      Includes: Table Creation + 50+ rows of INSERT data
+      For: Full Stack .NET Developer Interview Preparation
+      Compatible: SQL Server 2016 and above
+================================================================================
+
+Tables Included:
+  1. Departments
+  2. Locations
+  3. Employees
+  4. Customers
+  5. Products
+  6. Orders
+  7. OrderItems
+  8. Transactions
+  9. StockInventory
+ 10. WebSessionLogs
+ 11. SalesSummary (for PIVOT/reporting)
+ 12. StockPrices   (for moving average questions)
+
+================================================================================
+   STEP 1 — DROP TABLES (Run this if re-executing the script)
+================================================================================
+
+IF OBJECT_ID('dbo.OrderItems',      'U') IS NOT NULL DROP TABLE dbo.OrderItems;
+IF OBJECT_ID('dbo.Orders',          'U') IS NOT NULL DROP TABLE dbo.Orders;
+IF OBJECT_ID('dbo.Employees',       'U') IS NOT NULL DROP TABLE dbo.Employees;
+IF OBJECT_ID('dbo.Departments',     'U') IS NOT NULL DROP TABLE dbo.Departments;
+IF OBJECT_ID('dbo.Locations',       'U') IS NOT NULL DROP TABLE dbo.Locations;
+IF OBJECT_ID('dbo.Customers',       'U') IS NOT NULL DROP TABLE dbo.Customers;
+IF OBJECT_ID('dbo.Products',        'U') IS NOT NULL DROP TABLE dbo.Products;
+IF OBJECT_ID('dbo.Transactions',    'U') IS NOT NULL DROP TABLE dbo.Transactions;
+IF OBJECT_ID('dbo.StockInventory',  'U') IS NOT NULL DROP TABLE dbo.StockInventory;
+IF OBJECT_ID('dbo.WebSessionLogs',  'U') IS NOT NULL DROP TABLE dbo.WebSessionLogs;
+IF OBJECT_ID('dbo.SalesSummary',    'U') IS NOT NULL DROP TABLE dbo.SalesSummary;
+IF OBJECT_ID('dbo.StockPrices',     'U') IS NOT NULL DROP TABLE dbo.StockPrices;
+IF OBJECT_ID('dbo.ErrorLog',        'U') IS NOT NULL DROP TABLE dbo.ErrorLog;
+
+GO
+
+================================================================================
+   STEP 2 — CREATE TABLES
+================================================================================
+
+------------------------------------------------------------------------
+-- 1. LOCATIONS
+------------------------------------------------------------------------
+CREATE TABLE dbo.Locations (
+    LocationID   INT           PRIMARY KEY IDENTITY(1,1),
+    City         NVARCHAR(100) NOT NULL,
+    State        NVARCHAR(100) NOT NULL,
+    Country      NVARCHAR(100) NOT NULL DEFAULT 'India',
+    PostalCode   NVARCHAR(20)  NULL
+);
+GO
+
+------------------------------------------------------------------------
+-- 2. DEPARTMENTS
+------------------------------------------------------------------------
+CREATE TABLE dbo.Departments (
+    DepartmentID   INT           PRIMARY KEY IDENTITY(1,1),
+    DepartmentName NVARCHAR(100) NOT NULL,
+    LocationID     INT           NULL REFERENCES dbo.Locations(LocationID),
+    Budget         DECIMAL(18,2) NULL
+);
+GO
+
+------------------------------------------------------------------------
+-- 3. EMPLOYEES
+------------------------------------------------------------------------
+CREATE TABLE dbo.Employees (
+    EmployeeID   INT           PRIMARY KEY IDENTITY(1,1),
+    FirstName    NVARCHAR(100) NOT NULL,
+    LastName     NVARCHAR(100) NOT NULL,
+    Email        NVARCHAR(200) UNIQUE NOT NULL,
+    Phone        NVARCHAR(20)  NULL,
+    AlternatePhone NVARCHAR(20) NULL,
+    JobTitle     NVARCHAR(100) NULL,
+    DepartmentID INT           NULL REFERENCES dbo.Departments(DepartmentID),
+    ManagerID    INT           NULL REFERENCES dbo.Employees(EmployeeID),
+    Salary       DECIMAL(18,2) NOT NULL DEFAULT 0,
+    HireDate     DATE          NOT NULL DEFAULT GETDATE(),
+    IsActive     BIT           NOT NULL DEFAULT 1,
+    RowVersion   ROWVERSION
+);
+GO
+
+------------------------------------------------------------------------
+-- 4. CUSTOMERS
+------------------------------------------------------------------------
+CREATE TABLE dbo.Customers (
+    CustomerID   INT           PRIMARY KEY IDENTITY(1,1),
+    FirstName    NVARCHAR(100) NOT NULL,
+    LastName     NVARCHAR(100) NOT NULL,
+    Email        NVARCHAR(200) NULL,
+    Phone        NVARCHAR(20)  NULL,
+    AlternatePhone NVARCHAR(20) NULL,
+    Country      NVARCHAR(100) NOT NULL DEFAULT 'India',
+    City         NVARCHAR(100) NULL,
+    PostalCode   NVARCHAR(20)  NULL,
+    RegisteredOn DATE          NOT NULL DEFAULT GETDATE(),
+    IsActive     BIT           NOT NULL DEFAULT 1
+);
+GO
+
+------------------------------------------------------------------------
+-- 5. PRODUCTS
+------------------------------------------------------------------------
+CREATE TABLE dbo.Products (
+    ProductID      INT            PRIMARY KEY IDENTITY(1,1),
+    ProductName    NVARCHAR(200)  NOT NULL,
+    ProductCode    NVARCHAR(50)   UNIQUE NOT NULL,
+    Category       NVARCHAR(100)  NOT NULL,
+    Price          DECIMAL(18,2)  NOT NULL,
+    ReorderLevel   INT            NOT NULL DEFAULT 10,
+    IsDiscontinued BIT            NOT NULL DEFAULT 0,
+    SupplierName   NVARCHAR(200)  NULL,
+    ExpiryDate     DATE           NULL
+);
+GO
+
+------------------------------------------------------------------------
+-- 6. ORDERS
+------------------------------------------------------------------------
+CREATE TABLE dbo.Orders (
+    OrderID       INT            PRIMARY KEY IDENTITY(1,1),
+    CustomerID    INT            NULL REFERENCES dbo.Customers(CustomerID),
+    OrderDate     DATETIME       NOT NULL DEFAULT GETDATE(),
+    DeliveryDate  DATETIME       NULL,
+    TotalAmount   DECIMAL(18,2)  NOT NULL DEFAULT 0,
+    Discount      DECIMAL(5,2)   NULL,
+    Status        NVARCHAR(50)   NOT NULL DEFAULT 'Pending',
+    Region        NVARCHAR(100)  NULL
+);
+GO
+
+------------------------------------------------------------------------
+-- 7. ORDERITEMS
+------------------------------------------------------------------------
+CREATE TABLE dbo.OrderItems (
+    OrderItemID INT           PRIMARY KEY IDENTITY(1,1),
+    OrderID     INT           NOT NULL REFERENCES dbo.Orders(OrderID),
+    ProductID   INT           NOT NULL REFERENCES dbo.Products(ProductID),
+    Quantity    INT           NOT NULL DEFAULT 1,
+    UnitPrice   DECIMAL(18,2) NOT NULL,
+    LineTotal   AS (Quantity * UnitPrice) PERSISTED
+);
+GO
+
+------------------------------------------------------------------------
+-- 8. TRANSACTIONS
+------------------------------------------------------------------------
+CREATE TABLE dbo.Transactions (
+    TransactionID   INT            PRIMARY KEY IDENTITY(1,1),
+    AccountID       INT            NOT NULL,
+    TransactionType NVARCHAR(50)   NOT NULL,  -- 'Debit' / 'Credit'
+    Amount          DECIMAL(18,2)  NOT NULL,
+    TransactionDate DATETIME       NOT NULL DEFAULT GETDATE(),
+    Description     NVARCHAR(500)  NULL,
+    ReferenceID     NVARCHAR(100)  NULL
+);
+GO
+
+------------------------------------------------------------------------
+-- 9. STOCKINVENTORY
+------------------------------------------------------------------------
+CREATE TABLE dbo.StockInventory (
+    StockID         INT            PRIMARY KEY IDENTITY(1,1),
+    ProductID       INT            NOT NULL REFERENCES dbo.Products(ProductID),
+    StockQuantity   INT            NOT NULL DEFAULT 0,
+    ReorderLevel    INT            NOT NULL DEFAULT 10,
+    LastRestocked   DATE           NULL,
+    ExpiryDate      DATE           NULL,
+    WarehouseCode   NVARCHAR(50)   NULL
+);
+GO
+
+------------------------------------------------------------------------
+-- 10. WEBSESSIONLOGS
+------------------------------------------------------------------------
+CREATE TABLE dbo.WebSessionLogs (
+    LogID      INT            PRIMARY KEY IDENTITY(1,1),
+    SessionID  NVARCHAR(100)  NOT NULL,
+    UserID     INT            NULL,
+    PageURL    NVARCHAR(500)  NOT NULL,
+    VisitTime  DATETIME       NOT NULL DEFAULT GETDATE()
+);
+GO
+
+------------------------------------------------------------------------
+-- 11. SALESSUMMARY (for PIVOT / reporting questions)
+------------------------------------------------------------------------
+CREATE TABLE dbo.SalesSummary (
+    SummaryID   INT            PRIMARY KEY IDENTITY(1,1),
+    SalesMonth  NVARCHAR(20)   NOT NULL,  -- 'Jan', 'Feb', etc.
+    SalesYear   INT            NOT NULL,
+    Region      NVARCHAR(100)  NOT NULL,
+    Category    NVARCHAR(100)  NOT NULL,
+    TotalSales  DECIMAL(18,2)  NOT NULL
+);
+GO
+
+------------------------------------------------------------------------
+-- 12. STOCKPRICES (for moving average questions)
+------------------------------------------------------------------------
+CREATE TABLE dbo.StockPrices (
+    PriceID   INT            PRIMARY KEY IDENTITY(1,1),
+    StockID   NVARCHAR(20)   NOT NULL,
+    PriceDate DATE           NOT NULL,
+    Price     DECIMAL(18,4)  NOT NULL
+);
+GO
+
+------------------------------------------------------------------------
+-- 13. ERRORLOG (used in stored procedure TRY/CATCH questions)
+------------------------------------------------------------------------
+CREATE TABLE dbo.ErrorLog (
+    ErrorID       INT            PRIMARY KEY IDENTITY(1,1),
+    ErrorNumber   INT            NULL,
+    ErrorMessage  NVARCHAR(4000) NULL,
+    ErrorLine     INT            NULL,
+    ErrorSeverity INT            NULL,
+    ProcedureName NVARCHAR(200)  NULL,
+    LoggedAt      DATETIME       NOT NULL DEFAULT GETDATE()
+);
+GO
+
+
+================================================================================
+   STEP 3 — INSERT DATA (50+ rows per major table)
+================================================================================
+
+------------------------------------------------------------------------
+-- INSERT: LOCATIONS (15 rows)
+------------------------------------------------------------------------
+INSERT INTO dbo.Locations (City, State, Country, PostalCode) VALUES
+('Mumbai',      'Maharashtra',   'India', '400001'),
+('Delhi',       'Delhi',         'India', '110001'),
+('Bangalore',   'Karnataka',     'India', '560001'),
+('Hyderabad',   'Telangana',     'India', '500001'),
+('Chennai',     'Tamil Nadu',    'India', '600001'),
+('Pune',        'Maharashtra',   'India', '411001'),
+('Kolkata',     'West Bengal',   'India', '700001'),
+('Ahmedabad',   'Gujarat',       'India', '380001'),
+('Jaipur',      'Rajasthan',     'India', '302001'),
+('Surat',       'Gujarat',       'India', '395001'),
+('Lucknow',     'Uttar Pradesh', 'India', '226001'),
+('Bhopal',      'Madhya Pradesh','India', '462001'),
+('Indore',      'Madhya Pradesh','India', '452001'),
+('Chandigarh',  'Punjab',        'India', '160001'),
+('Nagpur',      'Maharashtra',   'India', '440001');
+GO
+
+------------------------------------------------------------------------
+-- INSERT: DEPARTMENTS (10 rows)
+------------------------------------------------------------------------
+INSERT INTO dbo.Departments (DepartmentName, LocationID, Budget) VALUES
+('Human Resources',       1,  5000000.00),
+('Information Technology',3,  8000000.00),
+('Finance',               2,  6000000.00),
+('Marketing',             4,  4000000.00),
+('Sales',                 5,  7000000.00),
+('Operations',            6,  9000000.00),
+('Research & Development',3, 12000000.00),
+('Customer Support',      7,  3000000.00),
+('Legal',                 2,  2500000.00),
+('Administration',        1,  2000000.00);
+GO
+
+------------------------------------------------------------------------
+-- INSERT: EMPLOYEES (60 rows)
+-- First insert top-level managers (ManagerID = NULL), then others
+------------------------------------------------------------------------
+
+-- Level 1: Top Management (no manager)
+INSERT INTO dbo.Employees (FirstName, LastName, Email, Phone, AlternatePhone, JobTitle, DepartmentID, ManagerID, Salary, HireDate, IsActive) VALUES
+('Rajesh',   'Kumar',    'rajesh.kumar@company.com',    '9876543210', NULL,         'CEO',               1,  NULL, 250000.00, '2015-01-10', 1),
+('Priya',    'Sharma',   'priya.sharma@company.com',    '9876543211', NULL,         'CTO',               2,  NULL, 220000.00, '2015-03-15', 1),
+('Amit',     'Patel',    'amit.patel@company.com',      '9876543212', NULL,         'CFO',               3,  NULL, 210000.00, '2015-06-20', 1),
+('Sunita',   'Verma',    'sunita.verma@company.com',    '9876543213', NULL,         'COO',               6,  NULL, 215000.00, '2016-01-05', 1),
+('Vikram',   'Singh',    'vikram.singh@company.com',    '9876543214', NULL,         'VP Sales',          5,  NULL, 185000.00, '2016-04-12', 1);
+GO
+
+-- Level 2: Senior Managers
+INSERT INTO dbo.Employees (FirstName, LastName, Email, Phone, AlternatePhone, JobTitle, DepartmentID, ManagerID, Salary, HireDate, IsActive) VALUES
+('Neha',     'Gupta',    'neha.gupta@company.com',      '9876543215', '9876543299', 'HR Manager',        1,  1,  120000.00, '2017-02-14', 1),
+('Anil',     'Joshi',    'anil.joshi@company.com',      '9876543216', NULL,         'Senior Dev Manager',2,  2,  140000.00, '2017-05-18', 1),
+('Meena',    'Rao',      'meena.rao@company.com',       '9876543217', NULL,         'Finance Manager',   3,  3,  130000.00, '2017-07-22', 1),
+('Suresh',   'Nair',     'suresh.nair@company.com',     '9876543218', NULL,         'Marketing Manager', 4,  4,  115000.00, '2018-01-30', 1),
+('Kavita',   'Desai',    'kavita.desai@company.com',    '9876543219', NULL,         'Sales Manager',     5,  5,  125000.00, '2018-03-11', 1),
+('Ravi',     'Iyer',     'ravi.iyer@company.com',       '9876543220', NULL,         'Ops Manager',       6,  4,  118000.00, '2018-06-25', 1),
+('Pooja',    'Mehta',    'pooja.mehta@company.com',     '9876543221', NULL,         'R&D Manager',       7,  2,  145000.00, '2018-09-10', 1),
+('Deepak',   'Saxena',   'deepak.saxena@company.com',   '9876543222', NULL,         'Support Manager',   8,  4,  105000.00, '2019-01-15', 1);
+GO
+
+-- Level 3: Regular Employees
+INSERT INTO dbo.Employees (FirstName, LastName, Email, Phone, AlternatePhone, JobTitle, DepartmentID, ManagerID, Salary, HireDate, IsActive) VALUES
+('Arjun',    'Mishra',   'arjun.mishra@company.com',    '9876543223', NULL,         'Software Engineer', 2,  7,  85000.00,  '2019-04-01', 1),
+('Sonal',    'Trivedi',  'sonal.trivedi@company.com',   '9876543224', NULL,         'Software Engineer', 2,  7,  82000.00,  '2019-06-15', 1),
+('Rahul',    'Pandey',   'rahul.pandey@company.com',    '9876543225', NULL,         'Senior Engineer',   2,  7,  95000.00,  '2019-08-20', 1),
+('Anjali',   'Tiwari',   'anjali.tiwari@company.com',   '9876543226', NULL,         'QA Engineer',       2,  7,  78000.00,  '2020-01-10', 1),
+('Manish',   'Dubey',    'manish.dubey@company.com',    '9876543227', NULL,         '.NET Developer',    2,  7,  90000.00,  '2020-03-22', 1),
+('Swati',    'Kapoor',   'swati.kapoor@company.com',    '9876543228', NULL,         'Angular Developer', 2,  7,  88000.00,  '2020-05-18', 1),
+('Nitin',    'Bhat',     'nitin.bhat@company.com',      '9876543229', NULL,         'DBA',               2,  7,  92000.00,  '2020-07-30', 1),
+('Pallavi',  'Jain',     'pallavi.jain@company.com',    '9876543230', NULL,         'DevOps Engineer',   2,  7,  94000.00,  '2020-09-14', 1),
+('Kiran',    'Reddy',    'kiran.reddy@company.com',     '9876543231', NULL,         'HR Executive',      1,  6,  55000.00,  '2020-11-01', 1),
+('Mohit',    'Agarwal',  'mohit.agarwal@company.com',   '9876543232', NULL,         'HR Executive',      1,  6,  52000.00,  '2021-01-17', 1),
+('Shruti',   'Bhatt',    'shruti.bhatt@company.com',    '9876543233', NULL,         'Accountant',        3,  8,  65000.00,  '2021-02-28', 1),
+('Vivek',    'Chauhan',  'vivek.chauhan@company.com',   '9876543234', NULL,         'Sr. Accountant',    3,  8,  72000.00,  '2021-04-05', 1),
+('Divya',    'Pillai',   'divya.pillai@company.com',    '9876543235', NULL,         'Marketing Executive',4, 9, 60000.00,  '2021-06-20', 1),
+('Gaurav',   'Shukla',   'gaurav.shukla@company.com',   '9876543236', NULL,         'Sales Executive',   5,  10, 58000.00, '2021-08-10', 1),
+('Tanya',    'Oberoi',   'tanya.oberoi@company.com',    '9876543237', NULL,         'Sales Executive',   5,  10, 56000.00, '2021-10-25', 1),
+('Siddharth','Malhotra', 'siddharth.malhotra@company.com','9876543238',NULL,        'Sales Executive',   5,  10, 61000.00, '2022-01-03', 1),
+('Ritika',   'Chopra',   'ritika.chopra@company.com',   '9876543239', NULL,         'Support Agent',     8,  13, 45000.00, '2022-03-15', 1),
+('Ashish',   'Verma',    'ashish.verma@company.com',    '9876543240', NULL,         'Support Agent',     8,  13, 43000.00, '2022-05-22', 1),
+('Preeti',   'Bansal',   'preeti.bansal@company.com',   '9876543241', NULL,         'Research Analyst',  7,  12, 98000.00, '2022-07-11', 1),
+('Sumit',    'Das',      'sumit.das@company.com',       '9876543242', NULL,         'Research Analyst',  7,  12, 96000.00, '2022-09-01', 1),
+('Lalita',   'Srivastava','lalita.srivastava@company.com','9876543243',NULL,        'Legal Counsel',     9,  3,  110000.00,'2022-11-14', 1),
+('Harish',   'Nanda',    'harish.nanda@company.com',    '9876543244', NULL,         'Legal Executive',   9,  3,  75000.00, '2023-01-09', 1),
+('Farhan',   'Siddiqui', 'farhan.siddiqui@company.com', '9876543245', NULL,         '.NET Developer',    2,  7,  87000.00, '2023-03-20', 1),
+('Nisha',    'Kulkarni', 'nisha.kulkarni@company.com',  '9876543246', NULL,         'Angular Developer', 2,  7,  84000.00, '2023-05-15', 1),
+('Tarun',    'Mathur',   'tarun.mathur@company.com',    '9876543247', NULL,         'SQL DBA',           2,  7,  91000.00, '2023-07-01', 1),
+('Isha',     'Wadhwa',   'isha.wadhwa@company.com',     '9876543248', NULL,         'Data Analyst',      2,  7,  80000.00, '2023-09-12', 1),
+('Rohan',    'Bose',     'rohan.bose@company.com',      '9876543249', NULL,         'Operations Exec',   6,  11, 50000.00, '2023-11-05', 1),
+('Simran',   'Arora',    'simran.arora@company.com',    '9876543250', NULL,         'Operations Exec',   6,  11, 48000.00, '2024-01-20', 1),
+('Dhruv',    'Malviya',  'dhruv.malviya@company.com',   '9876543251', NULL,         'Jr. Developer',     2,  7,  55000.00, '2024-03-10', 1),
+('Payal',    'Sethi',    'payal.sethi@company.com',     '9876543252', NULL,         'HR Executive',      1,  6,  51000.00, '2024-06-01', 1),
+('Arun',     'Krishnan', 'arun.krishnan@company.com',   '9876543253', NULL,         'Sr. Developer',     2,  7,  105000.00,'2024-08-14', 1),
+('Megha',    'Thakur',   'megha.thakur@company.com',    '9876543254', NULL,         'Scrum Master',      2,  7,  115000.00,'2024-10-01', 1),
+('Pankaj',   'Goyal',    'pankaj.goyal@company.com',    '9876543255', NULL,         'Finance Analyst',   3,  8,  68000.00, '2024-12-01', 0),
+('Alka',     'Rawat',    'alka.rawat@company.com',      '9876543256', NULL,         'Admin Executive',   10, 1,  42000.00, '2025-01-15', 1),
+('Sachin',   'Patil',    'sachin.patil@company.com',    '9876543257', NULL,         'Marketing Analyst', 4,  9,  63000.00, '2025-03-01', 1),
+('Rekha',    'Soni',     'rekha.soni@company.com',      '9876543258', NULL,         'Accountant',        3,  8,  66000.00, '2025-05-10', 1),
+('Tushar',   'Ghosh',    'tushar.ghosh@company.com',    '9876543259', NULL,         'Support Agent',     8,  13, 44000.00, '2025-07-20', 1),
+('Vineeta',  'Bajpai',   'vineeta.bajpai@company.com',  '9876543260', NULL,         'Intern Developer',  2,  7,  28000.00, '2025-09-01', 1),
+('Shyam',    'Lal',      'shyam.lal@company.com',       NULL,         NULL,         'Driver',            10, 1,  25000.00, '2016-05-01', 1),
+('Geeta',    'Naik',     'geeta.naik@company.com',      NULL,         NULL,         'Office Boy',        10, 1,  22000.00, '2016-07-15', 0);
+GO
+
+------------------------------------------------------------------------
+-- INSERT: CUSTOMERS (55 rows)
+------------------------------------------------------------------------
+INSERT INTO dbo.Customers (FirstName, LastName, Email, Phone, AlternatePhone, Country, City, PostalCode, RegisteredOn, IsActive) VALUES
+('Aarav',    'Shah',      'aarav.shah@gmail.com',       '8800001111', NULL,         'India', 'Mumbai',    '400001', '2020-01-15', 1),
+('Bhavna',   'Patel',     'bhavna.patel@gmail.com',     '8800001112', '8800009001', 'India', 'Surat',     '395001', '2020-02-20', 1),
+('Chirag',   'Modi',      'chirag.modi@gmail.com',      '8800001113', NULL,         'India', 'Ahmedabad', '380001', '2020-03-10', 1),
+('Disha',    'Joshi',     'disha.joshi@gmail.com',      '8800001114', NULL,         'India', 'Pune',      '411001', '2020-04-05', 1),
+('Eshan',    'Trivedi',   'eshan.trivedi@gmail.com',    '8800001115', NULL,         'India', 'Vadodara',  '390001', '2020-05-18', 1),
+('Falak',    'Ansari',    'falak.ansari@gmail.com',     '8800001116', NULL,         'India', 'Delhi',     '110001', '2020-06-22', 1),
+('Gaurav',   'Tiwari',    'gaurav.tiwari@gmail.com',    '8800001117', NULL,         'India', 'Lucknow',   '226001', '2020-07-30', 1),
+('Hina',     'Qureshi',   'hina.qureshi@gmail.com',     '8800001118', NULL,         'India', 'Kanpur',    '208001', '2020-08-14', 1),
+('Ishan',    'Choudhary', 'ishan.c@gmail.com',          '8800001119', NULL,         'India', 'Jaipur',    '302001', '2020-09-01', 1),
+('Jaya',     'Pillai',    'jaya.pillai@gmail.com',      '8800001120', NULL,         'India', 'Chennai',   '600001', '2020-10-10', 1),
+('Karan',    'Malhotra',  'karan.m@gmail.com',          '8800001121', NULL,         'India', 'Chandigarh','160001', '2020-11-25', 1),
+('Lata',     'Bose',      'lata.bose@gmail.com',        '8800001122', NULL,         'India', 'Kolkata',   '700001', '2020-12-05', 1),
+('Manoj',    'Reddy',     'manoj.reddy@gmail.com',      '8800001123', NULL,         'India', 'Hyderabad', '500001', '2021-01-18', 1),
+('Nandini',  'Rao',       'nandini.rao@gmail.com',      '8800001124', NULL,         'India', 'Bangalore', '560001', '2021-02-28', 1),
+('Om',       'Sharma',    'om.sharma@gmail.com',        '8800001125', NULL,         'India', 'Bhopal',    '462001', '2021-03-15', 1),
+('Pari',     'Singh',     'pari.singh@gmail.com',       '8800001126', NULL,         'India', 'Indore',    '452001', '2021-04-22', 1),
+('Qasim',    'Sheikh',    'qasim.sheikh@gmail.com',     '8800001127', NULL,         'India', 'Nagpur',    '440001', '2021-05-30', 1),
+('Ritu',     'Verma',     'ritu.verma@gmail.com',       '8800001128', NULL,         'India', 'Agra',      '282001', '2021-06-08', 1),
+('Sagar',    'Gupta',     'sagar.gupta@gmail.com',      '8800001129', NULL,         'India', 'Varanasi',  '221001', '2021-07-19', 1),
+('Tanvi',    'Kapoor',    'tanvi.kapoor@gmail.com',     '8800001130', NULL,         'India', 'Mumbai',    '400002', '2021-08-27', 1),
+('Uday',     'Nair',      'uday.nair@gmail.com',        '8800001131', NULL,         'India', 'Kochi',     '682001', '2021-09-14', 1),
+('Vani',     'Iyer',      'vani.iyer@gmail.com',        '8800001132', NULL,         'India', 'Coimbatore','641001', '2021-10-03', 1),
+('Wasim',    'Khan',      'wasim.khan@gmail.com',       '8800001133', NULL,         'India', 'Delhi',     '110002', '2021-11-20', 1),
+('Xena',     'Dsouza',    'xena.dsouza@gmail.com',      '8800001134', NULL,         'India', 'Goa',       '403001', '2021-12-15', 1),
+('Yash',     'Mehta',     'yash.mehta@gmail.com',       '8800001135', NULL,         'India', 'Pune',      '411002', '2022-01-10', 1),
+('Zara',     'Dixit',     'zara.dixit@gmail.com',       '8800001136', NULL,         'India', 'Jhansi',    '284001', '2022-02-28', 1),
+('Aman',     'Bajpai',    'aman.bajpai@gmail.com',      '8800001137', NULL,         'India', 'Meerut',    '250001', '2022-03-22', 1),
+('Bindu',    'Mishra',    'bindu.mishra@gmail.com',     '8800001138', NULL,         'India', 'Allahabad', '211001', '2022-04-18', 1),
+('Chetan',   'Shukla',    'chetan.shukla@gmail.com',    '8800001139', NULL,         'India', 'Raipur',    '492001', '2022-05-05', 1),
+('Deepa',    'Pandey',    'deepa.pandey@gmail.com',     '8800001140', NULL,         'India', 'Patna',     '800001', '2022-06-12', 1),
+('Eknath',   'Pawar',     'eknath.pawar@gmail.com',     '8800001141', NULL,         'India', 'Nashik',    '422001', '2022-07-30', 1),
+('Fiona',    'Fernandes', 'fiona.f@gmail.com',          '8800001142', NULL,         'India', 'Mangalore', '575001', '2022-08-16', 1),
+('Girish',   'Kulkarni',  'girish.kulkarni@gmail.com',  '8800001143', NULL,         'India', 'Belgaum',   '590001', '2022-09-01', 1),
+('Harpreet', 'Kaur',      'harpreet.kaur@gmail.com',    '8800001144', NULL,         'India', 'Amritsar',  '143001', '2022-10-20', 1),
+('Indira',   'Menon',     'indira.menon@gmail.com',     '8800001145', NULL,         'India', 'Trivandrum','695001', '2022-11-11', 1),
+('Jayesh',   'Naik',      'jayesh.naik@gmail.com',      '8800001146', NULL,         'India', 'Panaji',    '403001', '2022-12-25', 1),
+('Kriti',    'Agarwal',   'kriti.agarwal@gmail.com',    '8800001147', NULL,         'India', 'Noida',     '201301', '2023-01-14', 1),
+('Lokesh',   'Yadav',     'lokesh.yadav@gmail.com',     '8800001148', NULL,         'India', 'Faridabad',  '121001','2023-02-28', 1),
+('Monika',   'Saxena',    'monika.saxena@gmail.com',    '8800001149', NULL,         'India', 'Gurgaon',   '122001', '2023-03-17', 1),
+('Naresh',   'Thakur',    'naresh.thakur@gmail.com',    '8800001150', NULL,         'India', 'Shimla',    '171001', '2023-04-05', 1),
+('Ojaswi',   'Bansal',    'ojaswi.bansal@gmail.com',    '8800001151', NULL,         'India', 'Dehradun',  '248001', '2023-05-22', 1),
+('Pranav',   'Sinha',     'pranav.sinha@gmail.com',     '8800001152', NULL,         'India', 'Ranchi',    '834001', '2023-06-10', 1),
+('Qira',     'Das',       'qira.das@gmail.com',         '8800001153', NULL,         'India', 'Bhubaneswar','751001','2023-07-18', 1),
+('Rajan',    'Gogoi',     'rajan.gogoi@gmail.com',      '8800001154', NULL,         'India', 'Guwahati',  '781001', '2023-08-30', 1),
+('Sunaina',  'Hazarika',  'sunaina.h@gmail.com',        '8800001155', NULL,         'India', 'Shillong',  '793001', '2023-09-15', 1),
+('Tarun',    'Walia',     'tarun.walia@gmail.com',      '8800001156', NULL,         'India', 'Ludhiana',  '141001', '2023-10-01', 1),
+('Urmila',   'Chandra',   'urmila.chandra@gmail.com',   '8800001157', NULL,         'India', 'Mysore',    '570001', '2023-11-20', 1),
+('Varun',    'Sodhi',     'varun.sodhi@gmail.com',      '8800001158', NULL,         'India', 'Jodhpur',   '342001', '2023-12-05', 1),
+('Wajid',    'Hussain',   'wajid.hussain@gmail.com',    '8800001159', NULL,         'India', 'Hyderabad', '500002', '2024-01-25', 1),
+('Xriti',    'Nanda',     'xriti.nanda@gmail.com',      '8800001160', NULL,         'India', 'Pune',      '411003', '2024-02-14', 1),
+('Yogesh',   'Bahl',      'yogesh.bahl@gmail.com',      '8800001161', NULL,         'India', 'Delhi',     '110003', '2024-03-30', 1),
+('Zainab',   'Mirza',     'zainab.mirza@gmail.com',     '8800001162', NULL,         'India', 'Bangalore', '560002', '2024-05-08', 1),
+('Aditya',   'Rawat',     'aditya.rawat@gmail.com',     '8800001163', NULL,         'India', 'Mumbai',    '400003', '2024-07-17', 1),
+('Bela',     'Sood',      'bela.sood@gmail.com',        '8800001164', NULL,         'India', 'Chennai',   '600002', '2024-09-22', 1),
+('Cyrus',    'Contractor','cyrus.c@gmail.com',           '8800001165', NULL,         'India', 'Mumbai',    '400004', '2024-11-11', 1),
+('Damini',   'Roy',       'damini.roy@gmail.com',       NULL,          NULL,         'India', 'Kolkata',   '700002', '2025-01-01', 0);
+GO
+
+------------------------------------------------------------------------
+-- INSERT: PRODUCTS (50 rows)
+------------------------------------------------------------------------
+INSERT INTO dbo.Products (ProductName, ProductCode, Category, Price, ReorderLevel, IsDiscontinued, SupplierName, ExpiryDate) VALUES
+('HP Laptop 15',            'PRD001', 'Electronics',  55000.00, 5,  0, 'HP India',         NULL),
+('Dell Inspiron 14',        'PRD002', 'Electronics',  62000.00, 5,  0, 'Dell India',        NULL),
+('Samsung Galaxy S24',      'PRD003', 'Electronics',  79999.00, 10, 0, 'Samsung India',     NULL),
+('iPhone 15',               'PRD004', 'Electronics',  89999.00, 10, 0, 'Apple India',       NULL),
+('Sony WH-1000XM5 Headphones','PRD005','Electronics', 29999.00, 8,  0, 'Sony India',        NULL),
+('LG 43" Smart TV',         'PRD006', 'Electronics',  42000.00, 5,  0, 'LG India',          NULL),
+('Canon DSLR Camera',       'PRD007', 'Electronics',  55000.00, 3,  0, 'Canon India',       NULL),
+('JBL Bluetooth Speaker',   'PRD008', 'Electronics',   4999.00, 15, 0, 'JBL India',         NULL),
+('Lenovo ThinkPad',         'PRD009', 'Electronics',  75000.00, 4,  0, 'Lenovo India',      NULL),
+('iPad Air',                'PRD010', 'Electronics',  59999.00, 6,  0, 'Apple India',       NULL),
+('Cotton T-Shirt (L)',       'PRD011', 'Clothing',       799.00, 50, 0, 'FabIndia',          NULL),
+('Denim Jeans',             'PRD012', 'Clothing',      1499.00, 40, 0, 'Levi India',        NULL),
+('Formal Shirt',            'PRD013', 'Clothing',      1299.00, 30, 0, 'Arrow India',       NULL),
+('Sports Shoes',            'PRD014', 'Clothing',      2999.00, 25, 0, 'Nike India',        NULL),
+('Running Shoes',           'PRD015', 'Clothing',      3499.00, 20, 0, 'Adidas India',      NULL),
+('Winter Jacket',           'PRD016', 'Clothing',      3999.00, 15, 0, 'Woodland India',    NULL),
+('Kurti Set',               'PRD017', 'Clothing',       999.00, 30, 0, 'Biba India',        NULL),
+('Saree',                   'PRD018', 'Clothing',      2499.00, 20, 0, 'Tanishq Weaves',    NULL),
+('Trousers',                'PRD019', 'Clothing',      1199.00, 35, 0, 'Van Heusen',        NULL),
+('Sneakers',                'PRD020', 'Clothing',      2199.00, 25, 1, 'Puma India',        NULL),
+('Rice 5kg',                'PRD021', 'Groceries',      350.00, 100,0, 'Daawat',            '2026-12-31'),
+('Atta 10kg',               'PRD022', 'Groceries',      450.00, 80, 0, 'Ashirvaad',         '2026-10-31'),
+('Sunflower Oil 1L',        'PRD023', 'Groceries',      150.00, 100,0, 'Saffola',           '2026-08-31'),
+('Sugar 1kg',               'PRD024', 'Groceries',       55.00, 150,0, 'Local',             '2027-01-01'),
+('Toor Dal 1kg',            'PRD025', 'Groceries',      110.00, 120,0, 'TataSampann',       '2026-09-30'),
+('Butter 500g',             'PRD026', 'Groceries',      270.00, 60, 0, 'Amul',              '2025-09-30'),
+('Milk 1L',                 'PRD027', 'Groceries',       60.00, 200,0, 'Amul',              '2025-06-10'),
+('Biscuits Pack',           'PRD028', 'Groceries',       40.00, 200,0, 'Parle',             '2026-06-30'),
+('Green Tea 100 bags',      'PRD029', 'Groceries',      250.00, 80, 0, 'Tetley India',      '2026-05-31'),
+('Coffee 200g',             'PRD030', 'Groceries',      350.00, 60, 0, 'Nescafe',           '2026-11-30'),
+('The Alchemist (Book)',     'PRD031', 'Books',          299.00, 20, 0, 'HarperCollins',     NULL),
+('Atomic Habits (Book)',     'PRD032', 'Books',          399.00, 20, 0, 'Penguin India',     NULL),
+('Clean Code (Book)',        'PRD033', 'Books',          699.00, 10, 0, 'Prentice Hall',     NULL),
+('C# in Depth (Book)',       'PRD034', 'Books',          799.00, 10, 0, 'Manning',           NULL),
+('Design Patterns (Book)',   'PRD035', 'Books',          899.00, 10, 0, 'Pearson',           NULL),
+('Deep Work (Book)',         'PRD036', 'Books',          349.00, 15, 0, 'Penguin India',     NULL),
+('Rich Dad Poor Dad',        'PRD037', 'Books',          249.00, 20, 0, 'Warner Books',      NULL),
+('SQL Server 2022 Guide',    'PRD038', 'Books',          999.00, 5,  0, 'Apress',            NULL),
+('JavaScript Bible',         'PRD039', 'Books',          849.00, 8,  0, 'Wiley India',       NULL),
+('Pro Angular (Book)',        'PRD040', 'Books',          750.00, 8,  0, 'Apress',            NULL),
+('Wooden Study Table',       'PRD041', 'Furniture',     8999.00, 5,  0, 'Pepperfry',         NULL),
+('Office Chair',             'PRD042', 'Furniture',    12999.00, 4,  0, 'Godrej Interio',    NULL),
+('Bookshelf',                'PRD043', 'Furniture',     5999.00, 5,  0, 'Hometown',          NULL),
+('Sofa 3-Seater',            'PRD044', 'Furniture',    29999.00, 2,  0, 'Urban Ladder',      NULL),
+('Dining Table 4-Seater',    'PRD045', 'Furniture',    22000.00, 2,  0, 'Nilkamal',          NULL),
+('Yoga Mat',                 'PRD046', 'Sports',         999.00, 30, 0, 'Decathlon India',   NULL),
+('Cricket Bat',              'PRD047', 'Sports',        2499.00, 15, 0, 'MRF',               NULL),
+('Badminton Racket',         'PRD048', 'Sports',        1299.00, 20, 0, 'Yonex',             NULL),
+('Football',                 'PRD049', 'Sports',         899.00, 25, 0, 'Nivia',             NULL),
+('Skipping Rope',            'PRD050', 'Sports',         299.00, 50, 0, 'Cosco',             NULL);
+GO
+
+------------------------------------------------------------------------
+-- INSERT: ORDERS (60 rows)
+------------------------------------------------------------------------
+INSERT INTO dbo.Orders (CustomerID, OrderDate, DeliveryDate, TotalAmount, Discount, Status, Region) VALUES
+(1,  '2023-01-05', '2023-01-10', 55000.00, 500.00,  'Delivered', 'West'),
+(2,  '2023-01-12', '2023-01-18', 4999.00,  NULL,    'Delivered', 'West'),
+(3,  '2023-01-20', '2023-01-27', 62000.00, 1000.00, 'Delivered', 'West'),
+(4,  '2023-02-02', '2023-02-10', 1498.00,  NULL,    'Delivered', 'West'),
+(5,  '2023-02-14', '2023-02-22', 299.00,   NULL,    'Delivered', 'West'),
+(6,  '2023-02-28', '2023-03-07', 79999.00, 2000.00, 'Delivered', 'North'),
+(7,  '2023-03-10', '2023-03-18', 450.00,   NULL,    'Delivered', 'North'),
+(8,  '2023-03-22', NULL,         89999.00, 3000.00, 'Cancelled', 'North'),
+(9,  '2023-04-01', '2023-04-09', 2999.00,  NULL,    'Delivered', 'North'),
+(10, '2023-04-15', '2023-04-23', 42000.00, 500.00,  'Delivered', 'South'),
+(11, '2023-05-03', '2023-05-11', 1299.00,  NULL,    'Delivered', 'North'),
+(12, '2023-05-20', '2023-05-28', 75000.00, 1500.00, 'Delivered', 'East'),
+(13, '2023-06-08', '2023-06-16', 399.00,   NULL,    'Delivered', 'South'),
+(14, '2023-06-25', '2023-07-03', 59999.00, NULL,    'Delivered', 'South'),
+(15, '2023-07-10', '2023-07-18', 699.00,   NULL,    'Delivered', 'Central'),
+(16, '2023-07-28', '2023-08-05', 3499.00,  NULL,    'Delivered', 'Central'),
+(17, '2023-08-14', '2023-08-22', 29999.00, 500.00,  'Delivered', 'South'),
+(18, '2023-09-01', '2023-09-09', 8999.00,  NULL,    'Delivered', 'East'),
+(19, '2023-09-18', '2023-09-26', 350.00,   NULL,    'Delivered', 'East'),
+(20, '2023-10-05', '2023-10-13', 12999.00, 200.00,  'Delivered', 'West'),
+(21, '2023-10-22', '2023-10-30', 899.00,   NULL,    'Delivered', 'South'),
+(22, '2023-11-08', '2023-11-16', 55000.00, 1000.00, 'Delivered', 'South'),
+(23, '2023-11-25', '2023-12-03', 299.00,   NULL,    'Delivered', 'North'),
+(24, '2023-12-10', '2023-12-18', 22000.00, 500.00,  'Delivered', 'West'),
+(25, '2023-12-28', '2024-01-05', 5999.00,  NULL,    'Delivered', 'West'),
+(1,  '2024-01-15', '2024-01-23', 799.00,   NULL,    'Delivered', 'West'),
+(2,  '2024-02-01', '2024-02-09', 62000.00, 1200.00, 'Delivered', 'West'),
+(3,  '2024-02-18', '2024-02-26', 1299.00,  NULL,    'Delivered', 'West'),
+(5,  '2024-03-05', '2024-03-13', 2499.00,  NULL,    'Delivered', 'West'),
+(6,  '2024-03-22', '2024-03-30', 350.00,   NULL,    'Delivered', 'North'),
+(10, '2024-04-08', '2024-04-16', 79999.00, 2500.00, 'Delivered', 'South'),
+(11, '2024-04-25', '2024-05-03', 999.00,   NULL,    'Delivered', 'North'),
+(13, '2024-05-12', '2024-05-20', 42000.00, 800.00,  'Delivered', 'South'),
+(15, '2024-05-29', '2024-06-06', 450.00,   NULL,    'Delivered', 'Central'),
+(17, '2024-06-15', '2024-06-23', 89999.00, 3500.00, 'Delivered', 'South'),
+(20, '2024-07-02', '2024-07-10', 1498.00,  NULL,    'Delivered', 'West'),
+(22, '2024-07-19', '2024-07-27', 29999.00, 600.00,  'Delivered', 'South'),
+(25, '2024-08-05', '2024-08-13', 799.00,   NULL,    'Delivered', 'West'),
+(1,  '2024-08-22', '2024-08-30', 55000.00, 1000.00, 'Delivered', 'West'),
+(3,  '2024-09-08', NULL,         62000.00, NULL,    'Processing','West'),
+(7,  '2024-09-25', '2024-10-03', 4999.00,  NULL,    'Delivered', 'North'),
+(9,  '2024-10-12', '2024-10-20', 2999.00,  NULL,    'Delivered', 'North'),
+(12, '2024-10-29', '2024-11-06', 75000.00, 2000.00, 'Delivered', 'East'),
+(14, '2024-11-15', '2024-11-23', 59999.00, NULL,    'Delivered', 'South'),
+(16, '2024-12-02', '2024-12-10', 3499.00,  NULL,    'Delivered', 'Central'),
+(18, '2024-12-19', NULL,         8999.00,  NULL,    'Shipped',   'East'),
+(21, '2025-01-05', '2025-01-13', 899.00,   NULL,    'Delivered', 'South'),
+(23, '2025-01-22', '2025-01-30', 349.00,   NULL,    'Delivered', 'North'),
+(26, '2025-02-08', '2025-02-16', 12999.00, 200.00,  'Delivered', 'East'),
+(27, '2025-02-25', NULL,         22000.00, 500.00,  'Processing','West'),
+(28, '2025-03-14', '2025-03-22', 699.00,   NULL,    'Delivered', 'Central'),
+(29, '2025-03-31', '2025-04-08', 55000.00, 1000.00, 'Delivered', 'West'),
+(30, '2025-04-17', '2025-04-25', 2499.00,  NULL,    'Delivered', 'West'),
+(31, '2025-05-04', '2025-05-12', 1299.00,  NULL,    'Delivered', 'West'),
+(32, '2025-05-21', NULL,         42000.00, 800.00,  'Shipped',   'East'),
+(33, '2025-06-07', NULL,         399.00,   NULL,    'Processing','South'),
+(34, '2025-06-24', NULL,         79999.00, 3000.00, 'Processing','North'),
+(35, '2025-07-11', NULL,         350.00,   NULL,    'Pending',   'Central'),
+(36, '2025-07-28', NULL,         5999.00,  NULL,    'Pending',   'Central'),
+(37, '2025-08-14', NULL,         29999.00, NULL,    'Pending',   'South');
+GO
+
+------------------------------------------------------------------------
+-- INSERT: ORDERITEMS (65 rows)
+------------------------------------------------------------------------
+INSERT INTO dbo.OrderItems (OrderID, ProductID, Quantity, UnitPrice) VALUES
+(1,  1,  1, 55000.00),
+(2,  5,  1, 29999.00),
+(3,  2,  1, 62000.00),
+(4,  12, 1, 1499.00),
+(4,  11, 1,   799.00),
+(5,  31, 1,   299.00),
+(6,  3,  1, 79999.00),
+(7,  22, 1,   450.00),
+(9,  14, 1,  2999.00),
+(10, 6,  1, 42000.00),
+(11, 13, 1,  1299.00),
+(12, 9,  1, 75000.00),
+(13, 32, 1,   399.00),
+(14, 10, 1, 59999.00),
+(15, 33, 1,   699.00),
+(16, 15, 1,  3499.00),
+(17, 5,  1, 29999.00),
+(18, 41, 1,  8999.00),
+(19, 21, 1,   350.00),
+(20, 42, 1, 12999.00),
+(21, 49, 1,   899.00),
+(22, 1,  1, 55000.00),
+(23, 31, 1,   299.00),
+(24, 45, 1, 22000.00),
+(25, 43, 1,  5999.00),
+(26, 11, 1,   799.00),
+(27, 2,  1, 62000.00),
+(28, 13, 1,  1299.00),
+(29, 47, 1,  2499.00),
+(30, 21, 1,   350.00),
+(31, 3,  1, 79999.00),
+(32, 46, 1,   999.00),
+(33, 6,  1, 42000.00),
+(34, 22, 1,   450.00),
+(35, 4,  1, 89999.00),
+(36, 12, 2,  1499.00),
+(37, 5,  1, 29999.00),
+(38, 11, 1,   799.00),
+(39, 1,  1, 55000.00),
+(41, 5,  1,  4999.00),
+(42, 14, 1,  2999.00),
+(43, 9,  1, 75000.00),
+(44, 10, 1, 59999.00),
+(45, 15, 1,  3499.00),
+(47, 49, 1,   899.00),
+(48, 36, 1,   349.00),
+(49, 42, 1, 12999.00),
+(51, 28, 2,    40.00),
+(51, 29, 1,   250.00),
+(52, 13, 1,  1299.00),
+(53, 1,  1, 55000.00),
+(54, 47, 1,  2499.00),
+(55, 13, 1,  1299.00),
+(56, 6,  1, 42000.00),
+(57, 36, 1,   349.00),
+(58, 3,  1, 79999.00),
+(59, 21, 1,   350.00),
+(60, 43, 1,  5999.00),
+(61, 5,  1, 29999.00),
+(62, 42, 1, 12999.00),
+(63, 32, 1,   399.00),
+(64, 1,  1, 55000.00),
+(65, 22, 1,   450.00);
+GO
+
+------------------------------------------------------------------------
+-- INSERT: TRANSACTIONS (55 rows)
+------------------------------------------------------------------------
+INSERT INTO dbo.Transactions (AccountID, TransactionType, Amount, TransactionDate, Description, ReferenceID) VALUES
+(1001, 'Credit', 50000.00, '2024-01-05 10:00:00', 'Salary Credit',           'SAL-JAN-001'),
+(1001, 'Debit',  5000.00,  '2024-01-10 14:30:00', 'Electricity Bill',        'BILL-001'),
+(1001, 'Debit',  2000.00,  '2024-01-15 09:00:00', 'Grocery Purchase',        'ORD-0001'),
+(1002, 'Credit', 75000.00, '2024-01-05 10:05:00', 'Salary Credit',           'SAL-JAN-002'),
+(1002, 'Debit',  10000.00, '2024-01-12 16:00:00', 'Rent Payment',            'RENT-001'),
+(1002, 'Debit',  3500.00,  '2024-01-18 11:30:00', 'Online Shopping',         'ORD-0002'),
+(1003, 'Credit', 45000.00, '2024-01-05 10:10:00', 'Salary Credit',           'SAL-JAN-003'),
+(1003, 'Debit',  1500.00,  '2024-01-20 12:00:00', 'Mobile Recharge',         'RCH-001'),
+(1004, 'Credit', 90000.00, '2024-01-05 10:15:00', 'Salary Credit',           'SAL-JAN-004'),
+(1004, 'Debit',  15000.00, '2024-01-22 17:00:00', 'Insurance Premium',       'INS-001'),
+(1001, 'Credit', 50000.00, '2024-02-05 10:00:00', 'Salary Credit',           'SAL-FEB-001'),
+(1001, 'Debit',  4800.00,  '2024-02-10 14:00:00', 'Electricity Bill',        'BILL-002'),
+(1002, 'Credit', 75000.00, '2024-02-05 10:05:00', 'Salary Credit',           'SAL-FEB-002'),
+(1002, 'Debit',  10000.00, '2024-02-12 16:00:00', 'Rent Payment',            'RENT-002'),
+(1003, 'Credit', 45000.00, '2024-02-05 10:10:00', 'Salary Credit',           'SAL-FEB-003'),
+(1004, 'Credit', 90000.00, '2024-02-05 10:15:00', 'Salary Credit',           'SAL-FEB-004'),
+(1004, 'Debit',  55000.00, '2024-02-20 13:00:00', 'Laptop Purchase',         'ORD-0003'),
+(1005, 'Credit', 30000.00, '2024-02-05 10:20:00', 'Salary Credit',           'SAL-FEB-005'),
+(1005, 'Debit',  1200.00,  '2024-02-25 09:30:00', 'Books Purchase',          'ORD-0004'),
+(1001, 'Credit', 50000.00, '2024-03-05 10:00:00', 'Salary Credit',           'SAL-MAR-001'),
+(1001, 'Debit',  29999.00, '2024-03-10 11:00:00', 'Headphones Purchase',     'ORD-0005'),
+(1002, 'Credit', 75000.00, '2024-03-05 10:05:00', 'Salary Credit',           'SAL-MAR-002'),
+(1003, 'Credit', 45000.00, '2024-03-05 10:10:00', 'Salary Credit',           'SAL-MAR-003'),
+(1003, 'Debit',  3000.00,  '2024-03-15 15:00:00', 'Dining',                  'TXN-001'),
+(1004, 'Credit', 90000.00, '2024-03-05 10:15:00', 'Salary Credit',           'SAL-MAR-004'),
+(1005, 'Credit', 30000.00, '2024-03-05 10:20:00', 'Salary Credit',           'SAL-MAR-005'),
+(1005, 'Debit',  5999.00,  '2024-03-20 10:00:00', 'Bookshelf Purchase',      'ORD-0006'),
+(1006, 'Credit', 60000.00, '2024-03-05 10:25:00', 'Salary Credit',           'SAL-MAR-006'),
+(1006, 'Debit',  42000.00, '2024-03-22 14:00:00', 'Smart TV Purchase',       'ORD-0007'),
+(1001, 'Credit', 5000.00,  '2024-03-28 09:00:00', 'Freelance Payment',       'FRL-001'),
+(1001, 'Credit', 50000.00, '2024-04-05 10:00:00', 'Salary Credit',           'SAL-APR-001'),
+(1002, 'Credit', 75000.00, '2024-04-05 10:05:00', 'Salary Credit',           'SAL-APR-002'),
+(1002, 'Debit',  79999.00, '2024-04-08 16:00:00', 'Mobile Purchase',         'ORD-0008'),
+(1003, 'Credit', 45000.00, '2024-04-05 10:10:00', 'Salary Credit',           'SAL-APR-003'),
+(1004, 'Credit', 90000.00, '2024-04-05 10:15:00', 'Salary Credit',           'SAL-APR-004'),
+(1004, 'Debit',  8999.00,  '2024-04-12 11:00:00', 'Furniture Purchase',      'ORD-0009'),
+(1005, 'Credit', 30000.00, '2024-04-05 10:20:00', 'Salary Credit',           'SAL-APR-005'),
+(1006, 'Credit', 60000.00, '2024-04-05 10:25:00', 'Salary Credit',           'SAL-APR-006'),
+(1007, 'Credit', 55000.00, '2024-04-05 10:30:00', 'Salary Credit',           'SAL-APR-007'),
+(1007, 'Debit',  12999.00, '2024-04-18 13:00:00', 'Chair Purchase',          'ORD-0010'),
+(1001, 'Credit', 50000.00, '2024-05-05 10:00:00', 'Salary Credit',           'SAL-MAY-001'),
+(1001, 'Debit',  2499.00,  '2024-05-10 12:00:00', 'Cricket Bat',             'ORD-0011'),
+(1002, 'Credit', 75000.00, '2024-05-05 10:05:00', 'Salary Credit',           'SAL-MAY-002'),
+(1003, 'Credit', 45000.00, '2024-05-05 10:10:00', 'Salary Credit',           'SAL-MAY-003'),
+(1003, 'Debit',  1299.00,  '2024-05-15 09:00:00', 'Badminton Racket',        'ORD-0012'),
+(1004, 'Credit', 90000.00, '2024-05-05 10:15:00', 'Salary Credit',           'SAL-MAY-004'),
+(1005, 'Credit', 30000.00, '2024-05-05 10:20:00', 'Salary Credit',           'SAL-MAY-005'),
+(1005, 'Debit',  899.00,   '2024-05-20 17:00:00', 'Football Purchase',       'ORD-0013'),
+(1006, 'Credit', 60000.00, '2024-05-05 10:25:00', 'Salary Credit',           'SAL-MAY-006'),
+(1007, 'Credit', 55000.00, '2024-05-05 10:30:00', 'Salary Credit',           'SAL-MAY-007'),
+(1007, 'Debit',  350.00,   '2024-05-25 08:00:00', 'Rice Purchase',           'ORD-0014'),
+(1008, 'Credit', 40000.00, '2024-05-05 10:35:00', 'Salary Credit',           'SAL-MAY-008'),
+(1008, 'Debit',  22000.00, '2024-05-28 14:30:00', 'Dining Table Purchase',   'ORD-0015'),
+(1009, 'Credit', 35000.00, '2024-05-05 10:40:00', 'Salary Credit',           'SAL-MAY-009'),
+(1009, 'Credit', 10000.00, '2024-05-30 16:00:00', 'Bonus',                   'BON-001');
+GO
+
+------------------------------------------------------------------------
+-- INSERT: STOCKINVENTORY (50 rows)
+------------------------------------------------------------------------
+INSERT INTO dbo.StockInventory (ProductID, StockQuantity, ReorderLevel, LastRestocked, ExpiryDate, WarehouseCode) VALUES
+(1,  25,  5,  '2025-01-10', NULL,         'WH-MUM-01'),
+(2,  18,  5,  '2025-01-15', NULL,         'WH-MUM-01'),
+(3,  42,  10, '2025-02-01', NULL,         'WH-DEL-01'),
+(4,  30,  10, '2025-02-05', NULL,         'WH-DEL-01'),
+(5,  55,  8,  '2025-02-10', NULL,         'WH-BLR-01'),
+(6,  12,  5,  '2025-02-15', NULL,         'WH-MUM-01'),
+(7,   8,  3,  '2025-03-01', NULL,         'WH-BLR-01'),
+(8,  80,  15, '2025-03-05', NULL,         'WH-HYD-01'),
+(9,  15,  4,  '2025-03-10', NULL,         'WH-BLR-01'),
+(10, 22,  6,  '2025-03-15', NULL,         'WH-MUM-01'),
+(11,150,  50, '2025-03-20', NULL,         'WH-MUM-02'),
+(12, 95,  40, '2025-03-22', NULL,         'WH-MUM-02'),
+(13, 72,  30, '2025-04-01', NULL,         'WH-DEL-01'),
+(14, 48,  25, '2025-04-05', NULL,         'WH-DEL-02'),
+(15, 35,  20, '2025-04-10', NULL,         'WH-DEL-02'),
+(16, 28,  15, '2025-04-15', NULL,         'WH-MUM-02'),
+(17,120,  30, '2025-04-20', NULL,         'WH-MUM-02'),
+(18, 65,  20, '2025-05-01', NULL,         'WH-MUM-02'),
+(19, 88,  35, '2025-05-05', NULL,         'WH-DEL-01'),
+(20,  0,  25, '2025-05-10', NULL,         'WH-DEL-02'),
+(21,500, 100, '2025-05-15', '2026-12-31', 'WH-MUM-03'),
+(22,380,  80, '2025-05-20', '2026-10-31', 'WH-MUM-03'),
+(23,420, 100, '2025-06-01', '2026-08-31', 'WH-MUM-03'),
+(24,600, 150, '2025-06-05', '2027-01-01', 'WH-DEL-03'),
+(25,350, 120, '2025-06-10', '2026-09-30', 'WH-DEL-03'),
+(26, 18,  60, '2025-06-15', '2025-09-30', 'WH-MUM-03'),
+(27, 80, 200, '2025-06-20', '2025-06-10', 'WH-MUM-03'),
+(28,800, 200, '2025-07-01', '2026-06-30', 'WH-DEL-03'),
+(29,200,  80, '2025-07-05', '2026-05-31', 'WH-BLR-02'),
+(30,150,  60, '2025-07-10', '2026-11-30', 'WH-BLR-02'),
+(31, 45,  20, '2025-07-15', NULL,         'WH-BLR-01'),
+(32, 38,  20, '2025-07-20', NULL,         'WH-BLR-01'),
+(33, 22,  10, '2025-08-01', NULL,         'WH-DEL-01'),
+(34, 18,  10, '2025-08-05', NULL,         'WH-DEL-01'),
+(35, 14,  10, '2025-08-10', NULL,         'WH-DEL-01'),
+(36, 30,  15, '2025-08-15', NULL,         'WH-BLR-01'),
+(37, 55,  20, '2025-08-20', NULL,         'WH-MUM-01'),
+(38,  8,   5, '2025-09-01', NULL,         'WH-DEL-01'),
+(39, 12,   8, '2025-09-05', NULL,         'WH-BLR-01'),
+(40, 10,   8, '2025-09-10', NULL,         'WH-BLR-01'),
+(41,  7,   5, '2025-09-15', NULL,         'WH-MUM-01'),
+(42,  9,   4, '2025-09-20', NULL,         'WH-BLR-01'),
+(43, 11,   5, '2025-10-01', NULL,         'WH-MUM-01'),
+(44,  4,   2, '2025-10-05', NULL,         'WH-MUM-01'),
+(45,  3,   2, '2025-10-10', NULL,         'WH-DEL-01'),
+(46, 90,  30, '2025-10-15', NULL,         'WH-HYD-01'),
+(47, 38,  15, '2025-10-20', NULL,         'WH-DEL-02'),
+(48, 55,  20, '2025-11-01', NULL,         'WH-DEL-02'),
+(49, 70,  25, '2025-11-05', NULL,         'WH-BLR-01'),
+(50,180,  50, '2025-11-10', NULL,         'WH-MUM-01');
+GO
+
+------------------------------------------------------------------------
+-- INSERT: WEBSESSIONLOGS (55 rows)
+------------------------------------------------------------------------
+INSERT INTO dbo.WebSessionLogs (SessionID, UserID, PageURL, VisitTime) VALUES
+('SES001', 1,  '/home',             '2024-06-01 09:00:00'),
+('SES001', 1,  '/products',         '2024-06-01 09:01:30'),
+('SES001', 1,  '/products/1',       '2024-06-01 09:03:00'),
+('SES001', 1,  '/cart',             '2024-06-01 09:05:00'),
+('SES001', 1,  '/checkout',         '2024-06-01 09:07:00'),
+('SES002', 2,  '/home',             '2024-06-01 10:00:00'),
+('SES002', 2,  '/about',            '2024-06-01 10:02:00'),
+('SES002', 2,  '/contact',          '2024-06-01 10:04:00'),
+('SES003', 3,  '/home',             '2024-06-01 11:00:00'),
+('SES003', 3,  '/products',         '2024-06-01 11:02:00'),
+('SES003', 3,  '/products/3',       '2024-06-01 11:05:00'),
+('SES003', 3,  '/products/4',       '2024-06-01 11:08:00'),
+('SES003', 3,  '/cart',             '2024-06-01 11:10:00'),
+('SES004', 4,  '/home',             '2024-06-02 09:30:00'),
+('SES004', 4,  '/login',            '2024-06-02 09:31:00'),
+('SES004', 4,  '/dashboard',        '2024-06-02 09:32:00'),
+('SES004', 4,  '/orders',           '2024-06-02 09:35:00'),
+('SES005', 5,  '/home',             '2024-06-02 10:15:00'),
+('SES005', 5,  '/products',         '2024-06-02 10:17:00'),
+('SES005', 5,  '/products/5',       '2024-06-02 10:20:00'),
+('SES005', 5,  '/checkout',         '2024-06-02 10:25:00'),
+('SES006', 6,  '/home',             '2024-06-03 08:00:00'),
+('SES006', 6,  '/products',         '2024-06-03 08:02:00'),
+('SES006', 6,  '/products/6',       '2024-06-03 08:05:00'),
+('SES006', 6,  '/cart',             '2024-06-03 08:07:00'),
+('SES006', 6,  '/checkout',         '2024-06-03 08:09:00'),
+('SES007', 7,  '/home',             '2024-06-03 14:00:00'),
+('SES007', 7,  '/search?q=laptop',  '2024-06-03 14:01:30'),
+('SES007', 7,  '/products/1',       '2024-06-03 14:03:00'),
+('SES007', 7,  '/products/2',       '2024-06-03 14:05:30'),
+('SES007', 7,  '/compare',          '2024-06-03 14:07:00'),
+('SES008', 8,  '/home',             '2024-06-04 09:00:00'),
+('SES008', 8,  '/categories',       '2024-06-04 09:02:00'),
+('SES008', 8,  '/products',         '2024-06-04 09:04:00'),
+('SES008', 8,  '/products/11',      '2024-06-04 09:06:00'),
+('SES009', 9,  '/home',             '2024-06-04 15:00:00'),
+('SES009', 9,  '/login',            '2024-06-04 15:01:00'),
+('SES009', 9,  '/profile',          '2024-06-04 15:02:30'),
+('SES009', 9,  '/orders',           '2024-06-04 15:04:00'),
+('SES009', 9,  '/orders/9',         '2024-06-04 15:05:30'),
+('SES010', 10, '/home',             '2024-06-05 11:00:00'),
+('SES010', 10, '/products',         '2024-06-05 11:02:00'),
+('SES010', 10, '/products/6',       '2024-06-05 11:05:00'),
+('SES010', 10, '/cart',             '2024-06-05 11:07:00'),
+('SES010', 10, '/checkout',         '2024-06-05 11:09:00'),
+('SES011', 11, '/home',             '2024-06-05 16:00:00'),
+('SES011', 11, '/products',         '2024-06-05 16:02:00'),
+('SES012', 12, '/home',             '2024-06-06 09:00:00'),
+('SES012', 12, '/products',         '2024-06-06 09:02:00'),
+('SES012', 12, '/products/9',       '2024-06-06 09:05:00'),
+('SES012', 12, '/cart',             '2024-06-06 09:07:00'),
+('SES012', 12, '/checkout',         '2024-06-06 09:09:00'),
+('SES012', 12, '/order-success',    '2024-06-06 09:12:00'),
+('SES013', NULL, '/home',           '2024-06-06 12:00:00'),
+('SES013', NULL, '/products',       '2024-06-06 12:03:00');
+GO
+
+------------------------------------------------------------------------
+-- INSERT: SALESSUMMARY (54 rows — 3 regions x 3 categories x 6 months)
+------------------------------------------------------------------------
+INSERT INTO dbo.SalesSummary (SalesMonth, SalesYear, Region, Category, TotalSales) VALUES
+('Jan', 2024, 'North', 'Electronics',  850000.00),
+('Jan', 2024, 'North', 'Clothing',     120000.00),
+('Jan', 2024, 'North', 'Groceries',     45000.00),
+('Jan', 2024, 'South', 'Electronics',  920000.00),
+('Jan', 2024, 'South', 'Clothing',     150000.00),
+('Jan', 2024, 'South', 'Groceries',     55000.00),
+('Jan', 2024, 'West',  'Electronics', 1100000.00),
+('Jan', 2024, 'West',  'Clothing',     180000.00),
+('Jan', 2024, 'West',  'Groceries',     70000.00),
+('Feb', 2024, 'North', 'Electronics',  760000.00),
+('Feb', 2024, 'North', 'Clothing',     110000.00),
+('Feb', 2024, 'North', 'Groceries',     42000.00),
+('Feb', 2024, 'South', 'Electronics',  880000.00),
+('Feb', 2024, 'South', 'Clothing',     140000.00),
+('Feb', 2024, 'South', 'Groceries',     50000.00),
+('Feb', 2024, 'West',  'Electronics', 1050000.00),
+('Feb', 2024, 'West',  'Clothing',     170000.00),
+('Feb', 2024, 'West',  'Groceries',     65000.00),
+('Mar', 2024, 'North', 'Electronics',  920000.00),
+('Mar', 2024, 'North', 'Clothing',     135000.00),
+('Mar', 2024, 'North', 'Groceries',     48000.00),
+('Mar', 2024, 'South', 'Electronics', 1050000.00),
+('Mar', 2024, 'South', 'Clothing',     165000.00),
+('Mar', 2024, 'South', 'Groceries',     58000.00),
+('Mar', 2024, 'West',  'Electronics', 1250000.00),
+('Mar', 2024, 'West',  'Clothing',     200000.00),
+('Mar', 2024, 'West',  'Groceries',     80000.00),
+('Apr', 2024, 'North', 'Electronics',  870000.00),
+('Apr', 2024, 'North', 'Clothing',     125000.00),
+('Apr', 2024, 'North', 'Groceries',     44000.00),
+('Apr', 2024, 'South', 'Electronics',  950000.00),
+('Apr', 2024, 'South', 'Clothing',     155000.00),
+('Apr', 2024, 'South', 'Groceries',     52000.00),
+('Apr', 2024, 'West',  'Electronics', 1150000.00),
+('Apr', 2024, 'West',  'Clothing',     185000.00),
+('Apr', 2024, 'West',  'Groceries',     72000.00),
+('May', 2024, 'North', 'Electronics',  990000.00),
+('May', 2024, 'North', 'Clothing',     145000.00),
+('May', 2024, 'North', 'Groceries',     50000.00),
+('May', 2024, 'South', 'Electronics', 1080000.00),
+('May', 2024, 'South', 'Clothing',     175000.00),
+('May', 2024, 'South', 'Groceries',     60000.00),
+('May', 2024, 'West',  'Electronics', 1300000.00),
+('May', 2024, 'West',  'Clothing',     210000.00),
+('May', 2024, 'West',  'Groceries',     85000.00),
+('Jun', 2024, 'North', 'Electronics', 1050000.00),
+('Jun', 2024, 'North', 'Clothing',     160000.00),
+('Jun', 2024, 'North', 'Groceries',     55000.00),
+('Jun', 2024, 'South', 'Electronics', 1150000.00),
+('Jun', 2024, 'South', 'Clothing',     190000.00),
+('Jun', 2024, 'South', 'Groceries',     65000.00),
+('Jun', 2024, 'West',  'Electronics', 1400000.00),
+('Jun', 2024, 'West',  'Clothing',     230000.00),
+('Jun', 2024, 'West',  'Groceries',     90000.00);
+GO
+
+------------------------------------------------------------------------
+-- INSERT: STOCKPRICES (56 rows — 4 stocks x 14 days)
+------------------------------------------------------------------------
+INSERT INTO dbo.StockPrices (StockID, PriceDate, Price) VALUES
+('RELIANCE', '2024-06-01', 2850.50),
+('RELIANCE', '2024-06-02', 2870.00),
+('RELIANCE', '2024-06-03', 2845.75),
+('RELIANCE', '2024-06-04', 2890.25),
+('RELIANCE', '2024-06-05', 2910.00),
+('RELIANCE', '2024-06-06', 2880.50),
+('RELIANCE', '2024-06-07', 2925.00),
+('RELIANCE', '2024-06-08', 2900.75),
+('RELIANCE', '2024-06-09', 2940.00),
+('RELIANCE', '2024-06-10', 2955.50),
+('RELIANCE', '2024-06-11', 2920.25),
+('RELIANCE', '2024-06-12', 2970.00),
+('RELIANCE', '2024-06-13', 2985.75),
+('RELIANCE', '2024-06-14', 3000.00),
+('TCS',      '2024-06-01', 3750.00),
+('TCS',      '2024-06-02', 3780.25),
+('TCS',      '2024-06-03', 3760.50),
+('TCS',      '2024-06-04', 3800.00),
+('TCS',      '2024-06-05', 3820.75),
+('TCS',      '2024-06-06', 3795.00),
+('TCS',      '2024-06-07', 3840.50),
+('TCS',      '2024-06-08', 3815.25),
+('TCS',      '2024-06-09', 3855.00),
+('TCS',      '2024-06-10', 3870.75),
+('TCS',      '2024-06-11', 3845.50),
+('TCS',      '2024-06-12', 3890.00),
+('TCS',      '2024-06-13', 3905.25),
+('TCS',      '2024-06-14', 3920.00),
+('INFOSYS',  '2024-06-01', 1450.00),
+('INFOSYS',  '2024-06-02', 1465.50),
+('INFOSYS',  '2024-06-03', 1455.25),
+('INFOSYS',  '2024-06-04', 1480.00),
+('INFOSYS',  '2024-06-05', 1490.75),
+('INFOSYS',  '2024-06-06', 1475.50),
+('INFOSYS',  '2024-06-07', 1505.00),
+('INFOSYS',  '2024-06-08', 1495.25),
+('INFOSYS',  '2024-06-09', 1515.00),
+('INFOSYS',  '2024-06-10', 1525.75),
+('INFOSYS',  '2024-06-11', 1510.50),
+('INFOSYS',  '2024-06-12', 1535.00),
+('INFOSYS',  '2024-06-13', 1545.25),
+('INFOSYS',  '2024-06-14', 1560.00),
+('WIPRO',    '2024-06-01',  450.00),
+('WIPRO',    '2024-06-02',  455.25),
+('WIPRO',    '2024-06-03',  448.50),
+('WIPRO',    '2024-06-04',  460.00),
+('WIPRO',    '2024-06-05',  465.75),
+('WIPRO',    '2024-06-06',  458.50),
+('WIPRO',    '2024-06-07',  470.00),
+('WIPRO',    '2024-06-08',  465.25),
+('WIPRO',    '2024-06-09',  475.00),
+('WIPRO',    '2024-06-10',  480.75),
+('WIPRO',    '2024-06-11',  472.50),
+('WIPRO',    '2024-06-12',  485.00),
+('WIPRO',    '2024-06-13',  490.25),
+('WIPRO',    '2024-06-14',  495.00);
+GO
+
+
+================================================================================
+   STEP 4 — VERIFY ROW COUNTS
+================================================================================
+
+SELECT 'Locations'      AS TableName, COUNT(*) AS RowCount FROM dbo.Locations
+UNION ALL
+SELECT 'Departments',                  COUNT(*) FROM dbo.Departments
+UNION ALL
+SELECT 'Employees',                    COUNT(*) FROM dbo.Employees
+UNION ALL
+SELECT 'Customers',                    COUNT(*) FROM dbo.Customers
+UNION ALL
+SELECT 'Products',                     COUNT(*) FROM dbo.Products
+UNION ALL
+SELECT 'Orders',                       COUNT(*) FROM dbo.Orders
+UNION ALL
+SELECT 'OrderItems',                   COUNT(*) FROM dbo.OrderItems
+UNION ALL
+SELECT 'Transactions',                 COUNT(*) FROM dbo.Transactions
+UNION ALL
+SELECT 'StockInventory',               COUNT(*) FROM dbo.StockInventory
+UNION ALL
+SELECT 'WebSessionLogs',               COUNT(*) FROM dbo.WebSessionLogs
+UNION ALL
+SELECT 'SalesSummary',                 COUNT(*) FROM dbo.SalesSummary
+UNION ALL
+SELECT 'StockPrices',                  COUNT(*) FROM dbo.StockPrices;
+GO
+
+
+================================================================================
+   QUICK REFERENCE — TABLE RELATIONSHIPS
+================================================================================
+
+  Locations      (LocationID)
+      |
+  Departments    (DepartmentID) --> LocationID --> Locations
+      |
+  Employees      (EmployeeID)   --> DepartmentID --> Departments
+                                --> ManagerID    --> Employees (self-ref)
+
+  Customers      (CustomerID)   -- standalone
+
+  Products       (ProductID)    -- standalone
+
+  Orders         (OrderID)      --> CustomerID --> Customers
+
+  OrderItems     (OrderItemID)  --> OrderID    --> Orders
+                                --> ProductID  --> Products
+
+  StockInventory (StockID)      --> ProductID  --> Products
+
+  Transactions   (TransactionID) -- standalone (AccountID = bank account)
+
+  WebSessionLogs (LogID)        -- standalone (UserID = app user, no FK)
+
+  SalesSummary   (SummaryID)    -- standalone reporting table
+
+  StockPrices    (PriceID)      -- standalone (StockID = stock ticker symbol)
+
+  ErrorLog       (ErrorID)      -- used by stored procedures TRY/CATCH
+
+================================================================================
+                              END OF FILE
+          Total Tables: 13  |  Total Rows: 600+
+================================================================================
